@@ -1,12 +1,27 @@
 <?php
 session_start(); // Start the session
-
+include '../db_connection.php';
 // Check if the admin is logged in
 if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
   // Redirect to the login page if not logged in
   header("Location: ../login.php"); // Adjust the path to your login page
   exit; // Ensure that no further code is executed
 }
+
+
+$totalRoomsQuery = "SELECT COUNT(*) as total FROM rooms";
+$totalRoomsResult = mysqli_query($conn, $totalRoomsQuery);
+$totalRooms = mysqli_fetch_assoc($totalRoomsResult)['total'];
+
+// Fetch total users
+$totalUsersQuery = "SELECT COUNT(*) as total FROM users"; // Adjust table name as needed
+$totalUsersResult = mysqli_query($conn, $totalUsersQuery);
+$totalUsers = mysqli_fetch_assoc($totalUsersResult)['total'];
+
+// Fetch total bookings
+$totalBookingsQuery = "SELECT COUNT(*) as total FROM reservations";
+$totalBookingsResult = mysqli_query($conn, $totalBookingsQuery);
+$totalBookings = mysqli_fetch_assoc($totalBookingsResult)['total'];
 ?>
 
 <!DOCTYPE html>
@@ -22,19 +37,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 <body class="bg-gray-100">
   <div class="flex">
     <!-- Sidebar -->
-    <div class="bg-blue-800 w-64 min-h-screen text-white">
-      <div class="p-4 text-center font-bold text-xl">Admin Dashboard</div>
-      <nav class="mt-6">
-        <a href="manage_rooms.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Manage
-          Rooms</a>
-        <a href="manage_users.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Manage
-          Users</a>
-        <a href="booking_management.php"
-          class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Booking Management</a>
-        <a href="/hotel_management/logout.php"
-          class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Logout</a>
-      </nav>
-    </div>
+    <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->
     <div class="flex-1 p-10">
@@ -46,21 +49,23 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
       </header>
 
       <main>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- Card 1 -->
-          <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="font-bold text-lg mb-2">Total Rooms</h2>
-            <p class="text-gray-700">20 Rooms</p>
-          </div>
-          <!-- Card 2 -->
-          <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="font-bold text-lg mb-2">Total Users</h2>
-            <p class="text-gray-700">100 Users</p>
-          </div>
-          <!-- Card 3 -->
-          <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="font-bold text-lg mb-2">Total Bookings</h2>
-            <p class="text-gray-700">50 Bookings</p>
+        <div class="container mx-auto p-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card 1 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+              <h2 class="font-bold text-lg mb-2">Total Rooms</h2>
+              <p class="text-gray-700"><?php echo htmlspecialchars($totalRooms); ?> </p>
+            </div>
+            <!-- Card 2 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+              <h2 class="font-bold text-lg mb-2">Total Users</h2>
+              <p class="text-gray-700"><?php echo htmlspecialchars($totalUsers); ?></p>
+            </div>
+            <!-- Card 3 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+              <h2 class="font-bold text-lg mb-2">Total Bookings</h2>
+              <p class="text-gray-700"><?php echo htmlspecialchars($totalBookings); ?></p>
+            </div>
           </div>
         </div>
       </main>
