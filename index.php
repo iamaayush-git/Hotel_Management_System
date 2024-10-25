@@ -22,10 +22,6 @@ $result = mysqli_query($conn, $sql);
     <title>Hotel Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .bg-home {
-            background-image: url('path/to/your/background.jpg');
-        }
-
         .active {
             font-weight: bold;
             color: blue;

@@ -22,14 +22,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['user_id'] = $user['id'];
-
+            $_SESSION['login_success'] = true;
             // Redirect based on user role
             if ($user['role'] === 'admin') {
                 $_SESSION['admin_logged_in'] = true;
                 echo "<script>window.location.href='./admin/admin_dashboard.php';</script>"; // Redirect to admin dashboard
             } else {
                 $_SESSION['user_logged_in'] = true;
-                echo "<script>alert('Login successful!'); window.location.href='index.php';</script>"; // Redirect to homepage
+                echo "<script>window.location.href='index.php';</script>"; // Redirect to homepage
             }
         } else {
             echo "<script>alert('Invalid password.');</script>";

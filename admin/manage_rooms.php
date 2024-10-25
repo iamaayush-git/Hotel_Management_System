@@ -137,7 +137,7 @@ mysqli_close($conn);
           </thead>
           <tbody class="text-gray-600 text-sm font-light">
             <?php while ($room = mysqli_fetch_assoc($result)): ?>
-              <tr class="border-b border-gray-200 hover:bg-gray-100">
+              <tr class="border-b border-gray-200 hover:bg-gray-100 font-semibold">
                 <td class="py-3 px-6 text-left"><?php echo $room['room_number']; ?></td>
                 <td class="py-3 px-6 text-left"><?php echo $room['room_type']; ?></td>
                 <td class="py-3 px-6 text-left">$<?php echo $room['price']; ?></td>
@@ -145,8 +145,7 @@ mysqli_close($conn);
                 <td class="py-3 px-6 text-left">
                   <button type="button" onclick="openUpdateModal(<?php echo htmlspecialchars(json_encode($room)); ?>)"
                     class="text-blue-500 hover:text-blue-700 font-semibold">Update</button>
-                  <a href="manage_rooms.php?delete=<?php echo $room['id']; ?>"
-                    onclick="return confirm('Are you sure you want to delete this room?');"
+                  <a href="#" onclick="openDeleteModal(<?php echo $room['id']; ?>)"
                     class="text-red-500 hover:text-red-700 font-semibold">Delete</a>
                 </td>
               </tr>
@@ -199,6 +198,22 @@ mysqli_close($conn);
     </div>
   </div>
 
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Confirm Delete</h2>
+      <p class="mb-6 text-gray-700">Are you sure you want to delete this room?</p>
+      <div class="flex justify-center">
+        <button id="confirmDeleteBtn"
+          class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 mr-2">Yes,
+          Delete</button>
+        <button onclick="closeDeleteModal()"
+          class="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+
   <script>
     function openUpdateModal(room) {
       document.getElementById('update_id').value = room.id;
@@ -213,6 +228,24 @@ mysqli_close($conn);
     function closeUpdateModal() {
       document.getElementById('updateModal').classList.add('hidden');
     }
+
+    let roomIdToDelete = null;
+
+    // Open the delete confirmation modal
+    function openDeleteModal(roomId) {
+      roomIdToDelete = roomId; // Store the room ID to be deleted
+      document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    // Close the delete confirmation modal
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.add('hidden');
+    }
+
+    // Confirm deletion and redirect
+    document.getElementById('confirmDeleteBtn').onclick = function () {
+      window.location.href = 'manage_rooms.php?delete=' + roomIdToDelete; // Redirect to the delete URL
+    };
   </script>
 </body>
 

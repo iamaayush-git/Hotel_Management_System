@@ -35,6 +35,12 @@ if (!$result) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Bookings</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .active {
+      font-weight: bold;
+      color: blue;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100">

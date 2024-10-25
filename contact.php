@@ -16,6 +16,12 @@ session_start();
             /* Update with the actual path */
         }
     </style>
+    <style>
+        .active {
+            font-weight: bold;
+            color: blue;
+        }
+    </style>
 </head>
 
 <body class="bg-contact bg-cover bg-center">

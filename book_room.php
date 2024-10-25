@@ -1,15 +1,24 @@
 <?php
-session_start(); // Start the session
+session_start();
 
-// Check if the user is logged in and has the right role
+// Check if the user is logged in and has the correct role
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'user') {
-  // Redirect to the login page if not logged in
   header("Location: login.php");
   exit;
 }
 
-// Connect to the database
 include "db_connection.php";
+
+// Check if the user is banned
+$user_id = $_SESSION['user_id'];
+$banned_check_sql = "SELECT is_banned FROM users WHERE id = '$user_id'";
+$banned_check_result = mysqli_query($conn, $banned_check_sql);
+$user_data = mysqli_fetch_assoc($banned_check_result);
+
+if ($user_data['is_banned']) {
+  // echo "<script>alert('You are banned from making bookings.'); window.location.href='index.php';</script>";
+  // exit;
+}
 
 // Fetch room details for the selected room
 $room_id = $_GET['room_id'];
@@ -18,32 +27,23 @@ $result = mysqli_query($conn, $sql);
 $room = mysqli_fetch_assoc($result);
 
 // Handle room booking
-// Handle room booking
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $guest_name = $_POST['guest_name'];
-  $room_id = $_POST['room_id'];
   $check_in_date = $_POST['check_in_date'];
   $check_out_date = $_POST['check_out_date'];
 
-  // Fetch room number
+  // Get room details
   $room_query = "SELECT room_number FROM rooms WHERE id = '$room_id'";
   $room_result = mysqli_query($conn, $room_query);
   $room = mysqli_fetch_assoc($room_result);
   $room_number = $room['room_number'];
 
-  // Get user_id from session
-  $user_id = $_SESSION['user_id'];
-
-  // Insert reservation into the database
-  $sql = "INSERT INTO reservations (guest_name, room_id, room_number, check_in_date, check_out_date, user_id) 
-          VALUES ('$guest_name', '$room_id', '$room_number', '$check_in_date', '$check_out_date', '$user_id')";
+  // Insert reservation with 'Pending' status
+  $sql = "INSERT INTO reservations (guest_name, room_id, room_number, check_in_date, check_out_date, user_id, status) 
+            VALUES ('$guest_name', '$room_id', '$room_number', '$check_in_date', '$check_out_date', '$user_id', 'Pending')";
 
   if (mysqli_query($conn, $sql)) {
-    // Mark room as unavailable
-    mysqli_query($conn, "UPDATE rooms SET availability = 'not available' WHERE id = '$room_id'");
-
-    // Show success message and redirect
-    echo "<script>alert('Booking successful!'); window.location.href='index.php';</script>";
+    echo "<script>alert('Booking successful! Your reservation is pending confirmation.'); window.location.href='index.php';</script>";
     exit;
   } else {
     echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
@@ -86,12 +86,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <input type="date" name="check_out_date"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
         </div>
-        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">Confirm
-          Booking</button>
+        <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
+          Confirm Booking
+        </button>
       </form>
-
     </div>
   </div>
+
+  <!-- Banned User Modal -->
+  <div id="bannedUserModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center">
+      <h2 class="text-2xl font-semibold text-red-600 mb-4">Access Denied</h2>
+      <p class="mb-6 text-gray-700">You are temporarily banned from making bookings.</p>
+      <button onclick="redirectToHome()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">OK</button>
+    </div>
+  </div>
+
+  <script>
+    // Show the banned user modal
+    function showBannedUserModal() {
+      document.getElementById('bannedUserModal').classList.remove('hidden');
+    }
+
+    // Redirect to the home page
+    function redirectToHome() {
+      window.location.href = 'index.php';
+    }
+
+    // Automatically show the modal if the user is banned
+    <?php if ($user_data['is_banned']): ?>
+      showBannedUserModal();
+    <?php endif; ?>
+  </script>
+
 </body>
 
 </html>
