@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 24, 2024 at 05:47 PM
+-- Generation Time: Oct 25, 2024 at 06:15 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,20 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `hotel_management`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `bookings`
---
-
-CREATE TABLE `bookings` (
-  `id` int(11) NOT NULL,
-  `guest_name` varchar(100) NOT NULL,
-  `room_id` int(11) NOT NULL,
-  `booking_date` timestamp NOT NULL DEFAULT current_timestamp(),
-  `status` varchar(20) DEFAULT 'confirmed'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -58,8 +44,8 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `guest_name`, `room_id`, `check_in_date`, `check_out_date`, `booking_date`, `status`, `room_number`, `user_id`) VALUES
-(24, 'Aayush', 13, '2024-10-24', '2024-10-25', '2024-10-24 15:02:16', 'Pending', '104', 11),
-(25, 'userSecond', 14, '2024-10-24', '2024-10-25', '2024-10-24 15:33:27', 'Pending', '106', 12);
+(37, 'Aayush', 13, '2024-10-25', '2024-10-26', '2024-10-25 16:10:05', 'Confirmed', '104', 11),
+(38, 'hi', 14, '2024-10-25', '2024-10-26', '2024-10-25 16:13:13', 'Pending', '106', 14);
 
 -- --------------------------------------------------------
 
@@ -82,10 +68,10 @@ CREATE TABLE `rooms` (
 
 INSERT INTO `rooms` (`id`, `room_number`, `room_type`, `price`, `availability`, `image_url`) VALUES
 (12, '102', 'single', 10.00, 'available', './assets/demo-6.jpg'),
-(13, '104', 'deluxe', 5000.00, 'not available', './assets/demo-4.jpg'),
+(13, '104', 'deluxe', 5000.00, 'available', './assets/demo-4.jpg'),
 (14, '106', 'suite', 5000.00, 'available', './assets/demo-5.jpg'),
 (15, '103', 'deluxe', 5000.00, 'available', './assets/demo-3.jpg'),
-(16, '104', 'suite', 10.00, 'not available', './assets/demo-2.jpg'),
+(16, '105', 'suite', 10.00, 'not available', './assets/demo-1.jpg'),
 (17, '101', 'double', 10.00, 'available', './assets/demo-2.jpg');
 
 -- --------------------------------------------------------
@@ -97,29 +83,24 @@ INSERT INTO `rooms` (`id`, `room_number`, `room_type`, `price`, `availability`, 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` varchar(50) NOT NULL
+  `role` varchar(50) NOT NULL,
+  `is_banned` tinyint(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `role`) VALUES
-(2, 'admin', '1', 'admin'),
-(11, 'user', '1', 'user'),
-(12, 'userb', '1', 'user');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `role`, `is_banned`) VALUES
+(11, 'user', 'user@gmail.com', '1', 'user', 0),
+(13, 'admin', 'admin@gmail.com', '1', 'admin', 0),
+(14, 'userb', 'userb@gmail.com', '1', 'user', 0);
 
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `bookings`
---
-ALTER TABLE `bookings`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `room_id` (`room_id`);
 
 --
 -- Indexes for table `reservations`
@@ -146,16 +127,10 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `bookings`
---
-ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `rooms`
@@ -167,17 +142,11 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `bookings`
---
-ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`);
 
 --
 -- Constraints for table `reservations`
