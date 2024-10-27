@@ -50,6 +50,12 @@
           class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'contact.php') ? 'active' : ''; ?>">Contact
           Us</a>
       </li>
+      <li><a href="food.php"
+          class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'food.php') ? 'active' : ''; ?>">Foods</a>
+      </li>
+      <li><a href="cart.php"
+          class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'cart.php') ? 'active' : ''; ?>">Cart</a>
+      </li>
 
       <?php if (isset($_SESSION['username'])): ?>
         <li><a href="my_bookings.php" class="text-gray-700 hover:text-blue-500">My Bookings</a></li>
@@ -66,7 +72,7 @@
 </nav>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+<div id="logoutModal" class="hidden fixed inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center">
   <div
     class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center transform transition-all duration-300 ease-in-out scale-95 hover:scale-100 border-t-4 border-red-600">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Confirm Logout</h2>
