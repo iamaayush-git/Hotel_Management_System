@@ -8,10 +8,7 @@ if (!isset($_SESSION['username'])) {
 
 $user_id = $_SESSION['user_id']; // Get user_id from session
 
-$conn = mysqli_connect('localhost', 'root', '', 'hotel_management');
-if (!$conn) {
-  die('Connection failed: ' . mysqli_connect_error());
-}
+include('db_connection.php');
 
 // Fetch user bookings
 $sql = "SELECT reservations.*, rooms.room_type, rooms.room_number FROM reservations
@@ -38,7 +35,7 @@ if (!$result) {
   <style>
     .active {
       font-weight: bold;
-      color: blue;
+      color: black;
     }
   </style>
 </head>

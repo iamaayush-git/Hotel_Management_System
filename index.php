@@ -12,6 +12,9 @@ include 'db_connection.php'; // Include your database connection file
 // Fetch only the top 3 available rooms
 $sql = "SELECT * FROM rooms WHERE availability = 'available' LIMIT 3";
 $result = mysqli_query($conn, $sql);
+
+$food_sql = "SELECT * FROM food_items LIMIT 3";
+$food_result = mysqli_query($conn, $food_sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -42,13 +45,13 @@ $result = mysqli_query($conn, $sql);
             <a href="all_rooms.php" class="bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600">View
                 All Rooms</a>
         </div>
-
+        <h2 class="text-3xl font-bold text-gray-800 text-center mt-10 mb-4">Our Services</h2>
         <div class="container mx-auto p-8 bg-white bg-opacity-70 rounded-lg mt-4">
-            <h2 class="text-3xl font-bold text-center mb-6">Our Rooms</h2>
+            <h2 class="text-3xl font-bold text-center mb-6">Rooms</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php if (mysqli_num_rows($result) > 0): ?>
                     <?php while ($room = mysqli_fetch_assoc($result)): ?>
-                        <a href="book_room.php?room_id=<?php echo $room['id']; ?>"
+                        <a href="all_rooms.php"
                             class="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
                             <img src="<?php echo htmlspecialchars($room['image_url']); ?>"
                                 alt="<?php echo htmlspecialchars($room['room_type']); ?>" class="w-full h-40 object-cover">
@@ -67,6 +70,31 @@ $result = mysqli_query($conn, $sql);
                 <?php endif; ?>
             </div>
         </div>
+        <div class="container mx-auto p-8 bg-white bg-opacity-70 rounded-lg mt-4">
+            <h2 class="text-3xl font-bold text-center mb-6">Foods</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php if (mysqli_num_rows($food_result) > 0): ?>
+                    <?php while ($food = mysqli_fetch_assoc($food_result)): ?>
+                        <a href="food.php"
+                            class="relative bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105">
+                            <img src="<?php echo htmlspecialchars($food['image_url']); ?>" alt="imgnotfound"
+                                class="w-full h-40 object-cover">
+                            <div class="p-4 my-8">
+                                <h3 class="text-xl font-bold mb-2">
+                                    <?php echo htmlspecialchars(strtoupper($food['name'])); ?>
+                                </h3>
+                                <p><?php echo htmlspecialchars($food['description']); ?></p>
+                                <p class="font-bold absolute bottom-2">$<?php echo htmlspecialchars($food['price']); ?> per
+                                    night</p>
+                            </div>
+                        </a>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <p class="text-center">No rooms available at the moment.</p>
+                <?php endif; ?>
+            </div>
+        </div>
+
 </body>
 
 </html>

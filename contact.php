@@ -15,11 +15,10 @@ session_start();
             background-image: url('path/to/your/contact-background.jpg');
             /* Update with the actual path */
         }
-    </style>
-    <style>
+
         .active {
             font-weight: bold;
-            color: blue;
+            color: black;
         }
     </style>
 </head>

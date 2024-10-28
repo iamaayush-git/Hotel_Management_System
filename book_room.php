@@ -15,11 +15,6 @@ $banned_check_sql = "SELECT is_banned FROM users WHERE id = '$user_id'";
 $banned_check_result = mysqli_query($conn, $banned_check_sql);
 $user_data = mysqli_fetch_assoc($banned_check_result);
 
-if ($user_data['is_banned']) {
-  // echo "<script>alert('You are banned from making bookings.'); window.location.href='index.php';</script>";
-  // exit;
-}
-
 // Fetch room details for the selected room
 $room_id = $_GET['room_id'];
 $sql = "SELECT * FROM rooms WHERE id = '$room_id'";
@@ -43,12 +38,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             VALUES ('$guest_name', '$room_id', '$room_number', '$check_in_date', '$check_out_date', '$user_id', 'Pending')";
 
   if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('Booking successful! Your reservation is pending confirmation.'); window.location.href='index.php';</script>";
+    // Set a session variable to indicate success
+    $_SESSION['booking_success'] = true;
+    header("Location: book_room.php?room_id=$room_id"); // Redirect to the same page to show the modal
     exit;
   } else {
     echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
   }
 }
+
+// Check if the booking was successful
+$booking_success = isset($_SESSION['booking_success']) ? $_SESSION['booking_success'] : false;
+
+// Unset the session variable
+unset($_SESSION['booking_success']);
 ?>
 
 <!DOCTYPE html>
@@ -98,8 +101,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center">
       <h2 class="text-2xl font-semibold text-red-600 mb-4">Access Denied</h2>
       <p class="mb-6 text-gray-700">You are temporarily banned from making bookings.</p>
-      <button onclick="redirectToHome()"
+      <button onclick="closeBanModal()"
         class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">OK</button>
+    </div>
+  </div>
+
+  <!-- Booking Successful Modal -->
+  <div id="successModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
+      <h2 class="text-xl font-bold text-green-600 mb-4">Booking Successful!</h2>
+      <p class="text-gray-700 mb-6">Your reservation is pending confirmation.</p>
+      <button onclick="closeModal('successModal')"
+        class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Close</button>
     </div>
   </div>
 
@@ -110,11 +123,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Redirect to the home page
-    function redirectToHome() {
-      window.location.href = 'index.php';
+    function closeBanModal() {
+      window.location.href = 'all_rooms.php';
+    }
+
+    // Close the success modal
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+      window.location.href = 'my_bookings.php'; // Optionally redirect after closing
     }
 
     // Automatically show the modal if the user is banned
+    <?php if ($user_data['is_banned']): ?>
+      showBannedUserModal();
+    <?php endif; ?>
+
+    // Show success modal if booking was successful
+    <?php if ($booking_success): ?>
+      document.getElementById('successModal').classList.remove('hidden');
+
+    <?php endif; ?>
+
     <?php if ($user_data['is_banned']): ?>
       showBannedUserModal();
     <?php endif; ?>

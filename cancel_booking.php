@@ -11,9 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['booking_id'])) {
   mysqli_stmt_bind_param($stmt, "i", $booking_id);
 
   if (mysqli_stmt_execute($stmt)) {
-    echo "<script>alert('Booking cancelled successfully!'); window.location.href='my_bookings.php';</script>";
-  } else {
-    echo "<script>alert('Error cancelling booking: " . mysqli_error($conn) . "');</script>";
+    echo "<script>window.location.href='my_bookings.php';</script>";
   }
 
   mysqli_stmt_close($stmt);

@@ -72,26 +72,6 @@ $result = mysqli_query($conn, $sql);
             <?php } ?>
         </div>
     </div>
-
-    <!-- Success Modal -->
-    <div id="successModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
-            <h2 class="text-xl font-bold text-green-600 mb-4">Booking Successful!</h2>
-            <p class="text-gray-700 mb-6">Your booking has been completed successfully.</p>
-            <button onclick="closeModal('successModal')"
-                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Close</button>
-        </div>
-    </div>
-
-    <!-- Error Modal -->
-    <div id="errorModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
-            <h2 class="text-xl font-bold text-red-600 mb-4">Booking Unavailable</h2>
-            <p class="text-gray-700 mb-6">This room is currently booked or pending confirmation.</p>
-            <button onclick="closeModal('errorModal')"
-                class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Close</button>
-        </div>
-    </div>
 </body>
 
 </html>

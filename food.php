@@ -53,12 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      VALUES ('$user_id', '$food_id', '$quantity', '$order_status', '$name', '$email', '$location_type', '$location_number', '$food_name', '$price','$image_url')";
 
     if (mysqli_query($conn, $insert_query)) {
-      $_SESSION['modal_message'] = "Order has been placed successfully!";
+      $_SESSION['success_message'] = "Items added to cart!";
     } else {
       $_SESSION['modal_message'] = "Error placing order: " . mysqli_error($conn);
     }
-  } else {
-    $_SESSION['modal_message'] = "Food item not found.";
+
   }
 
   // Redirect to refresh the page and display message
@@ -116,6 +115,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       document.getElementById('searchForm').submit();
     }
   </script>
+  <style>
+    .active {
+      font-weight: bold;
+      color: black;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100">
@@ -216,13 +221,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
+    <!-- Success Modal (hidden initially) -->
+    <div id="successModal" class="hidden fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center">
+      <div class="bg-white p-8 rounded-md shadow-md max-w-lg w-full text-left">
+        <h2 class="text-xl font-bold mb-1">Success!</h2>
+        <p><?php echo isset($_SESSION['success_message']) ? htmlspecialchars($_SESSION['success_message']) : ''; ?></p>
+        <button type="button" onclick="closeSuccessModal()"
+          class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 mt-2 rounded">Close</button>
+      </div>
+    </div>
+
+
     <?php
     // Clear modal message session variable after showing it
     unset($_SESSION['modal_message']);
     ?>
 
   </div>
+  <script>
+    // Function to close the success modal
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.add('hidden');
+    }
 
+    // Show the success modal if the session variable is set
+    window.onload = function () {
+      <?php if (isset($_SESSION['success_message'])): ?>
+        document.getElementById('successModal').classList.remove('hidden');
+        <?php unset($_SESSION['success_message']); // Clear the message after displaying ?>
+      <?php endif; ?>
+    };
+  </script>
 </body>
 
 </html>

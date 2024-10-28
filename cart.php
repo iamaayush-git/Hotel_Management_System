@@ -65,6 +65,12 @@ $cartItems = mysqli_fetch_all($result, MYSQLI_ASSOC);
   <title>Cart</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .active {
+      font-weight: bold;
+      color: black;
+    } 
+  </style>
 </head>
 
 <body class="bg-gray-100">

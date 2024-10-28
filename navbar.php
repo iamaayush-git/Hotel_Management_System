@@ -32,10 +32,19 @@
     }
   }
 </style>
+
 <nav class="bg-white bg-opacity-85 shadow-md">
   <div class="container mx-auto p-4 flex justify-between items-center">
     <h1 class="text-2xl font-bold">Hotel Management</h1>
-    <ul class="flex space-x-6">
+    <!-- Hamburger Menu -->
+    <div class="md:hidden">
+      <button id="menuButton" class="text-gray-700 focus:outline-none" onclick="toggleMenu()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+        </svg>
+      </button>
+    </div>
+    <ul id="navbar" class="hidden md:flex space-x-6">
       <li><a href="index.php"
           class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'index.php') ? 'active' : ''; ?>">Home</a>
       </li>
@@ -44,18 +53,40 @@
       </li>
       <li><a href="all_rooms.php"
           class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'all_rooms.php') ? 'active' : ''; ?>">Our
-          Rooms</a>
-      </li>
+          Rooms</a></li>
       <li><a href="contact.php"
           class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'contact.php') ? 'active' : ''; ?>">Contact
-          Us</a>
-      </li>
+          Us</a></li>
       <li><a href="food.php"
           class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'food.php') ? 'active' : ''; ?>">Foods</a>
       </li>
       <li><a href="cart.php"
           class="text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'cart.php') ? 'active' : ''; ?>">Cart</a>
       </li>
+
+      <?php if (isset($_SESSION['username'])): ?>
+        <li><a href="my_bookings.php"
+            class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'my_bookings.php') ? 'active' : ''; ?> ">My
+            Bookings</a></li>
+        <li class="text-gray-700">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</li>
+        <li>
+          <button onclick="openLogoutModal()" class="text-red-500 hover:text-red-700">Logout</button>
+        </li>
+      <?php else: ?>
+        <li><a href="register.php" class="text-gray-700 hover:text-blue-500">Register</a></li>
+        <li><a href="login.php" class="text-gray-700 hover:text-blue-500">Login</a></li>
+      <?php endif; ?>
+    </ul>
+  </div>
+  <!-- Mobile Menu -->
+  <div id="mobileMenu" class="hidden md:hidden">
+    <ul class="flex flex-col space-y-4 p-4 bg-white shadow-lg">
+      <li><a href="index.php" class="text-gray-700 hover:text-blue-500">Home</a></li>
+      <li><a href="about.php" class="text-gray-700 hover:text-blue-500">About</a></li>
+      <li><a href="all_rooms.php" class="text-gray-700 hover:text-blue-500">Our Rooms</a></li>
+      <li><a href="contact.php" class="text-gray-700 hover:text-blue-500">Contact Us</a></li>
+      <li><a href="food.php" class="text-gray-700 hover:text-blue-500">Foods</a></li>
+      <li><a href="cart.php" class="text-gray-700 hover:text-blue-500">Cart</a></li>
 
       <?php if (isset($_SESSION['username'])): ?>
         <li><a href="my_bookings.php" class="text-gray-700 hover:text-blue-500">My Bookings</a></li>
@@ -72,7 +103,7 @@
 </nav>
 
 <!-- Logout Confirmation Modal -->
-<div id="logoutModal" class="hidden fixed inset-0 bg-gray-300 bg-opacity-50 flex justify-center items-center">
+<div id="logoutModal" class="hidden fixed inset-0 bg-gray-300 bg-opacity-50 z-10 flex justify-center items-center">
   <div
     class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center transform transition-all duration-300 ease-in-out scale-95 hover:scale-100 border-t-4 border-red-600">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Confirm Logout</h2>
@@ -88,7 +119,7 @@
 
 <!-- Login Success Modal -->
 <?php if (isset($_SESSION['login_success']) && $_SESSION['login_success']): ?>
-  <div id="loginSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+  <div id="loginSuccessModal" class="fixed inset-0 bg-gray-300 bg-opacity-50 z-10 flex justify-center items-center">
     <div
       class="bg-white p-10 rounded-lg shadow-xl max-w-sm text-center transform transition-all duration-300 ease-in-out scale-95 hover:scale-100 border-t-8 border-blue-500">
       <h2 class="text-3xl font-bold text-gray-800 mb-4">Welcome Back!</h2>
@@ -119,5 +150,11 @@
   // Close the login success modal
   function closeLoginSuccessModal() {
     document.getElementById('loginSuccessModal').style.display = 'none';
+  }
+
+  // Toggle the mobile menu
+  function toggleMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
   }
 </script>
