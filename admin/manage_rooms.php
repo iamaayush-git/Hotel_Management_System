@@ -8,6 +8,10 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
   exit();
 }
 
+// Variables to control modal display
+$modalMessage = '';
+$modalType = ''; // success or error
+
 // Handle adding a new room
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_room'])) {
   $room_number = $_POST['room_number'];
@@ -20,9 +24,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_room'])) {
   $sql = "INSERT INTO rooms (room_number, room_type, price, availability, image_url) VALUES ('$room_number', '$room_type', '$price', '$availability', '$image_url')";
 
   if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('Room added successfully!');</script>";
+    $modalMessage = 'Room added successfully!';
+    $modalType = 'success';
   } else {
-    echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
+    $modalMessage = 'Error: ' . mysqli_error($conn);
+    $modalType = 'error';
   }
 }
 
@@ -32,12 +38,13 @@ if (isset($_GET['delete'])) {
   $sql = "DELETE FROM rooms WHERE id = '$id'";
 
   if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('Room deleted successfully!');</script>";
-    // Redirect to the same page to avoid refreshing issues
+    $modalMessage = 'Room deleted successfully!';
+    $modalType = 'success';
     header("Location: manage_rooms.php");
     exit();
   } else {
-    echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
+    $modalMessage = 'Error: ' . mysqli_error($conn);
+    $modalType = 'error';
   }
 }
 
@@ -53,9 +60,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_room'])) {
   $sql = "UPDATE rooms SET room_number='$room_number', room_type='$room_type', price='$price', availability='$availability', image_url='$image_url' WHERE id='$id'";
 
   if (mysqli_query($conn, $sql)) {
-    echo "<script>alert('Room updated successfully!');</script>";
+    $modalMessage = 'Room updated successfully!';
+    $modalType = 'success';
   } else {
-    echo "<script>alert('Error: " . mysqli_error($conn) . "');</script>";
+    $modalMessage = 'Error: ' . mysqli_error($conn);
+    $modalType = 'error';
   }
 }
 
@@ -119,7 +128,6 @@ mysqli_close($conn);
           </div>
           <button type="submit" name="add_room" class="bg-blue-500 text-white px-4 py-2 rounded">Add Room</button>
         </form>
-
       </div>
 
       <!-- Existing Rooms Table -->
@@ -156,10 +164,21 @@ mysqli_close($conn);
     </div>
   </div>
 
+  <!-- Success/Error Message Modal -->
+  <?php if ($modalMessage): ?>
+    <div id="messageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <p class="text-<?php echo $modalType === 'success' ? 'green' : 'red'; ?>-500 font-semibold">
+          <?php echo $modalMessage; ?>
+        </p>
+        <button onclick="closeMessageModal()" class="bg-blue-500 text-white px-4 py-2 rounded mt-4">Close</button>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <!-- Update Room Modal -->
   <div id="updateModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded shadow-lg">
-      <h2 class="text-xl font-bold mb-4">Update Room</h2>
+    <div class="bg-white p-6 rounded-lg shadow-lg">
       <form method="POST">
         <input type="hidden" id="update_id" name="id">
         <div class="mb-4">
@@ -193,28 +212,31 @@ mysqli_close($conn);
         </div>
         <button type="submit" name="update_room" class="bg-blue-500 text-white px-4 py-2 rounded">Update Room</button>
         <button type="button" onclick="closeUpdateModal()"
-          class="bg-red-500 text-white px-4 py-2 rounded">Cancel</button>
+          class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
       </form>
     </div>
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center">
-      <h2 class="text-2xl font-semibold text-gray-800 mb-4">Confirm Delete</h2>
-      <p class="mb-6 text-gray-700">Are you sure you want to delete this room?</p>
-      <div class="flex justify-center">
-        <button id="confirmDeleteBtn"
-          class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1 mr-2">Yes,
-          Delete</button>
-        <button onclick="closeDeleteModal()"
-          class="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out transform hover:-translate-y-1">Cancel</button>
-      </div>
+  <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <p class="font-semibold">Are you sure you want to delete this room?</p>
+      <form method="GET">
+        <input type="hidden" id="delete_room_id" name="delete">
+        <div class="flex justify-between mt-4">
+          <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+          <button type="button" onclick="closeDeleteModal()"
+            class="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 
-
   <script>
+    function closeMessageModal() {
+      document.getElementById('messageModal').style.display = 'none';
+    }
+
     function openUpdateModal(room) {
       document.getElementById('update_id').value = room.id;
       document.getElementById('update_room_number').value = room.room_number;
@@ -229,23 +251,14 @@ mysqli_close($conn);
       document.getElementById('updateModal').classList.add('hidden');
     }
 
-    let roomIdToDelete = null;
-
-    // Open the delete confirmation modal
     function openDeleteModal(roomId) {
-      roomIdToDelete = roomId; // Store the room ID to be deleted
+      document.getElementById('delete_room_id').value = roomId;
       document.getElementById('deleteModal').classList.remove('hidden');
     }
 
-    // Close the delete confirmation modal
     function closeDeleteModal() {
       document.getElementById('deleteModal').classList.add('hidden');
     }
-
-    // Confirm deletion and redirect
-    document.getElementById('confirmDeleteBtn').onclick = function () {
-      window.location.href = 'manage_rooms.php?delete=' + roomIdToDelete; // Redirect to the delete URL
-    };
   </script>
 </body>
 

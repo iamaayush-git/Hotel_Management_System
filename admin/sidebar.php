@@ -9,6 +9,10 @@
       Users</a>
     <a href="booking_management.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Booking
       Management</a>
+    <a href="food_orders_management.php"
+      class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Food Orders</a>
+    <a href="manage_food.php" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700">Manage
+      Food</a>
     <button onclick="openLogoutModal()"
       class="block w-full py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 text-left">Logout</button>
   </nav>

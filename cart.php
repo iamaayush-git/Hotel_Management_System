@@ -3,16 +3,9 @@ session_start();
 include 'db_connection.php';
 
 // Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-  echo "
-    <div class='flex items-center justify-center min-h-screen bg-gray-100'>
-        <div class='bg-white p-6 rounded-lg shadow-lg text-center'>
-            <h2 class='text-2xl font-semibold text-red-500 mb-4'>Access Denied</h2>
-            <p class='text-gray-700'>Please log in to view your cart.</p>
-            <a href='login.php' class='mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600'>Log In</a>
-        </div>
-    </div>";
-  exit;
+if (!isset($_SESSION['username'])) {
+  header("Location: login.php");
+  exit();
 }
 
 $user_id = $_SESSION['user_id']; // Get the logged-in user's ID
@@ -31,29 +24,26 @@ if (isset($_POST['update'])) {
   $id = intval($_POST['id']);
   $quantity = intval($_POST['quantity']);
 
-  // Fetch the current status of the order
-  $status_query = "SELECT order_status FROM cart WHERE id = $id AND user_id = $user_id";
-  $status_result = mysqli_query($conn, $status_query);
-  $status_row = mysqli_fetch_assoc($status_result);
-  $order_status = $status_row['order_status'];
-
-  if ($order_status !== 'Confirmed' && $order_status !== 'Cancelled') {
-    if ($quantity > 0) {
-      $query = "UPDATE cart SET quantity = $quantity, total_price = (price * $quantity) WHERE id = $id AND user_id = $user_id";
-      mysqli_query($conn, $query);
-      $message = "Quantity updated successfully!";
-    } else {
-      $message = "Quantity must be greater than zero!";
-    }
+  if ($quantity > 0) {
+    $query = "UPDATE cart SET quantity = $quantity, total_price = (price * $quantity) WHERE id = $id AND user_id = $user_id";
+    mysqli_query($conn, $query);
+    echo json_encode(['status' => 'success', 'message' => 'Quantity updated successfully!']);
   } else {
-    $message = "Cannot update quantity for orders with status: $order_status";
+    echo json_encode(['status' => 'error', 'message' => 'Quantity must be greater than zero!']);
   }
+  exit();
 }
 
-// Fetch cart items for logged-in user
-$query = "SELECT * FROM cart WHERE user_id = $user_id";
+// Fetch cart items for logged-in user with calculated total_price
+$query = "SELECT *, (price * quantity) AS total_price FROM cart WHERE user_id = $user_id";
 $result = mysqli_query($conn, $query);
 $cartItems = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+// Calculate total bill
+$totalBill = 0;
+foreach ($cartItems as $item) {
+  $totalBill += $item['total_price'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +59,7 @@ $cartItems = mysqli_fetch_all($result, MYSQLI_ASSOC);
     .active {
       font-weight: bold;
       color: black;
-    } 
+    }
   </style>
 </head>
 
@@ -103,15 +93,11 @@ $cartItems = mysqli_fetch_all($result, MYSQLI_ASSOC);
               <th class="py-3 px-4 text-left">Quantity</th>
               <th class="py-3 px-4 text-left">Price</th>
               <th class="py-3 px-4 text-left">Total Price</th>
-              <th class="py-3 px-4 text-left">Status</th>
               <th class="py-3 px-4 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <?php foreach ($cartItems as $item):
-              $total_price = $item['price'] * $item['quantity'];
-              ?>
-
+            <?php foreach ($cartItems as $item): ?>
               <tr class="border-b hover:bg-gray-100">
                 <td class="py-2 px-4"><?= htmlspecialchars($item['food_name']) ?></td>
                 <td class="py-2 px-4">
@@ -121,37 +107,31 @@ $cartItems = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <td class="py-2 px-4"><?= htmlspecialchars($item['location_number']) ?></td>
                 <td class="py-2 px-4">
                   <span id="quantity-<?= $item['id'] ?>"><?= $item['quantity'] ?></span>
-                  <?php if ($item['order_status'] !== 'Confirmed' && $item['order_status'] !== 'Cancelled'): ?>
-                    <button class="bg-blue-500 rounded-md text-white px-2 py-1 ml-2 update-button"
-                      data-id="<?= $item['id'] ?>">Update</button>
-                  <?php endif; ?>
+                  <button class="bg-blue-500 rounded-md text-white px-2 py-1 ml-2 update-button"
+                    data-id="<?= $item['id'] ?>">Update</button>
                 </td>
-                <td class="py-2 px-4">$<?= number_format($item['price'], 2) ?></td>
-                <td class="py-2 px-4">$<?= number_format($total_price, 2) ?></td>
-                <td class="py-2 px-4">
-                  <?php
-                  if ($item['order_status'] == 'Confirmed') {
-                    echo "<span class='text-green-500 font-semibold'>Confirmed</span>";
-                  } else if ($item['order_status'] == 'Cancelled') {
-                    echo "<span class='text-red-500 font-semibold'>Cancelled</span>"; // Change text based on your logic
-                  } else if ($item['order_status'] == 'Pending') {
-                    echo "<span class='text-yellow-500 font-semibold'>Pending</span>";
-                  }
-
-                  ?>
-                </td>
-
+                <td class="py-2 px-4 item-price">$<?= number_format($item['price'], 2) ?></td>
+                <td class="py-2 px-4 item-total">$<?= number_format($item['total_price'], 2) ?></td>
                 <td class="py-2 px-4 text-center">
-
-                  <?php if ($item['order_status'] !== 'Confirmed' && $item['order_status'] !== 'Cancelled'): ?>
-                    <button class="bg-red-500 rounded-md text-white px-2 py-1 ml-2 delete-button"
-                      data-id="<?= $item['id'] ?>">Cancel Order</button>
-                  <?php endif; ?>
+                  <button class="bg-red-500 rounded-md text-white px-2 py-1 ml-2 delete-button"
+                    data-id="<?= $item['id'] ?>">Remove</button>
                 </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
+      </div>
+
+      <!-- Total Bill Section -->
+      <div class="mt-4 text-right">
+        <div class="bg-white p-6 rounded-lg shadow-md mt-6">
+          <h2 class="text-xl font-bold text-gray-800">Total Bill:</h2>
+          <p id="totalBillAmount" class="text-2xl font-semibold text-green-600">$<?= number_format($totalBill, 2) ?></p>
+        </div>
+        <!-- Order Now Button -->
+        <a href="order_now.php" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+          Order Now
+        </a>
       </div>
     <?php endif; ?>
   </div>
@@ -175,54 +155,73 @@ $cartItems = mysqli_fetch_all($result, MYSQLI_ASSOC);
   <!-- Delete Confirmation Modal -->
   <div id="deleteModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex justify-center items-center">
     <div class="bg-white p-5 rounded shadow-lg w-1/3">
-      <h2 class="text-xl mb-4">Confirm Cancel</h2>
-      <p>Are you sure you want to cancel your order?</p>
-      <div class="flex justify-end mt-4">
-        <a id="confirmDeleteLink" class="bg-red-500 text-white px-4 py-2 rounded">Yes, Cancel</a>
-        <button type="button" id="closeDeleteModal" class="ml-2 bg-gray-300 text-gray-800 px-4 py-2">No</button>
+      <h2 class="text-xl mb-4">Delete Item</h2>
+      <p class="mb-4">Are you sure you want to remove this item from your cart?</p>
+      <div class="flex justify-end">
+        <a href="#" id="confirmDelete" class="bg-red-500 text-white px-4 py-2">Yes, Remove</a>
+        <button id="closeDeleteModal" class="ml-2 bg-gray-300 text-gray-800 px-4 py-2">Cancel</button>
       </div>
     </div>
   </div>
 
   <script>
     $(document).ready(function () {
-      // Show update modal
-      $('.update-button').on('click', function () {
+      function calculateTotalBill() {
+        let totalBill = 0;
+        $('.item-total').each(function () {
+          totalBill += parseFloat($(this).text().replace('$', ''));
+        });
+        $('#totalBillAmount').text(`$${totalBill.toFixed(2)}`);
+      }
+
+      // Open Update Modal
+      $('.update-button').click(function () {
         const itemId = $(this).data('id');
-        const currentQuantity = $('#quantity-' + itemId).text();
+        const currentQuantity = $(`#quantity-${itemId}`).text(); // Get current quantity
+
         $('#updateItemId').val(itemId);
-        $('#updateQuantity').val(currentQuantity);
+        $('#updateQuantity').val(currentQuantity); // Set current quantity in input
         $('#updateModal').removeClass('hidden');
       });
 
-      // Close update modal
-      $('#closeUpdateModal').on('click', function () {
+      // Close Update Modal
+      $('#closeUpdateModal').click(function () {
         $('#updateModal').addClass('hidden');
       });
 
-      // Show delete confirmation modal
-      $('.delete-button').on('click', function () {
+      // Update quantity via AJAX
+      $('#updateForm').submit(function (e) {
+        e.preventDefault();
+        const id = $('#updateItemId').val();
+        const quantity = $('#updateQuantity').val();
+        $.ajax({
+          url: 'cart.php',
+          type: 'POST',
+          data: { update: true, id, quantity },
+          dataType: 'json',
+          success: function (response) {
+            if (response.status === 'success') {
+              location.reload();
+            } else {
+              alert(response.message);
+            }
+          }
+        });
+      });
+
+      // Open Delete Modal
+      $('.delete-button').click(function () {
         const itemId = $(this).data('id');
-        $('#confirmDeleteLink').attr('href', 'cart.php?delete=' + itemId);
+        $('#confirmDelete').attr('href', `cart.php?delete=${itemId}`);
         $('#deleteModal').removeClass('hidden');
       });
 
-      // Close delete confirmation modal
-      $('#closeDeleteModal').on('click', function () {
+      // Close Delete Modal
+      $('#closeDeleteModal').click(function () {
         $('#deleteModal').addClass('hidden');
       });
-
-      // Hide message after 3 seconds
-      setTimeout(function () {
-        $('#message').fadeOut();
-      }, 3000);
     });
   </script>
-
 </body>
 
 </html>
-
-<?php
-mysqli_close($conn);
-?>

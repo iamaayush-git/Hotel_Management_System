@@ -22,6 +22,13 @@ $totalUsers = mysqli_fetch_assoc($totalUsersResult)['total'];
 $totalBookingsQuery = "SELECT COUNT(*) as total FROM reservations";
 $totalBookingsResult = mysqli_query($conn, $totalBookingsQuery);
 $totalBookings = mysqli_fetch_assoc($totalBookingsResult)['total'];
+
+$totalFoodItemsQuery = "SELECT * FROM `food_items` WHERE 1";
+$totalFoodItemsResult = mysqli_query($conn, $totalFoodItemsQuery);
+if ($totalFoodItemsResult) {
+  // Count the total number of rows in the result
+  $totalFoodItems = mysqli_num_rows($totalFoodItemsResult);
+}
 ?>
 
 <!DOCTYPE html>
@@ -65,6 +72,11 @@ $totalBookings = mysqli_fetch_assoc($totalBookingsResult)['total'];
             <div class="bg-white p-6 rounded-lg shadow-md">
               <h2 class="font-bold text-lg mb-2">Total Bookings</h2>
               <p class="text-gray-700"><?php echo htmlspecialchars($totalBookings); ?></p>
+            </div>
+            <!-- Card 4 -->
+            <div class="bg-white p-6 rounded-lg shadow-md">
+              <h2 class="font-bold text-lg mb-2">Food Items</h2>
+              <p class="text-gray-700"><?php echo htmlspecialchars($totalFoodItems); ?></p>
             </div>
           </div>
         </div>
