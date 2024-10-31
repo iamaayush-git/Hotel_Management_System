@@ -213,8 +213,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="location_number" class="block mb-2">Room/Table Number:</label>
             <input type="text" name="location_number" id="location_number" required class="w-full border rounded p-2">
           </div>
-          <button type="submit" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded">Confirm
-            Order</button>
+          <button type="submit" class="bg-green-500 hover:bg-green-700 text-white py-2 px-4 rounded">Add</button>
           <button type="button" onclick="closeOrderModal()"
             class="bg-gray-300 hover:bg-gray-400 text-gray-700 py-2 px-4 rounded ml-2">Cancel</button>
         </form>

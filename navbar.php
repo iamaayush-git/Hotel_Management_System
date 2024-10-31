@@ -65,6 +65,9 @@
       </li>
 
       <?php if (isset($_SESSION['username'])): ?>
+        <li><a href="order_now.php"
+            class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'order_now.php') ? 'active' : ''; ?> ">My
+            Orders</a></li>
         <li><a href="my_bookings.php"
             class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'my_bookings.php') ? 'active' : ''; ?> ">My
             Bookings</a></li>

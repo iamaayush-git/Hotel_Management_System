@@ -34,6 +34,8 @@ if (isset($_POST['update'])) {
   exit();
 }
 
+
+
 // Fetch cart items for logged-in user with calculated total_price
 $query = "SELECT *, (price * quantity) AS total_price FROM cart WHERE user_id = $user_id";
 $result = mysqli_query($conn, $query);
