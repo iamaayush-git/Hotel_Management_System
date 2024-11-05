@@ -9,8 +9,6 @@ if (!isset($_SESSION['admin_logged_in'])) {
   exit();
 }
 
-$successMessage = "";
-$errorMessage = "";
 $orders = [];
 
 // Fetch all food orders
@@ -20,25 +18,20 @@ while ($row = mysqli_fetch_assoc($orderResult)) {
   $orders[] = $row;
 }
 
-// Update order status (this part is not used anymore for AJAX)
+// Handle AJAX request for updating order status
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['action'])) {
   $orderId = $_POST['order_id'];
   $action = $_POST['action'];
   $newStatus = $action === 'confirm' ? 'Confirmed' : 'Cancelled';
 
-  // Debugging output
-  error_log("Updating order $orderId to status $newStatus");
-
   $updateQuery = "UPDATE food_order SET order_status = '$newStatus' WHERE id = '$orderId'";
   if (mysqli_query($conn, $updateQuery)) {
     echo json_encode(['status' => 'success', 'newStatus' => $newStatus]);
-    exit();
   } else {
     echo json_encode(['status' => 'error', 'message' => "Failed to update order: " . mysqli_error($conn)]);
-    exit();
   }
+  exit();
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -55,33 +48,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
   <div class="container mx-auto p-8">
     <h2 class="text-4xl font-semibold mb-6 text-center text-gray-800">Manage Food Orders</h2>
 
-    <!-- Success/Error Modals -->
-    <?php if ($successMessage || $errorMessage): ?>
-      <div id="messageModal" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50">
-        <div class="bg-white p-6 rounded shadow-lg text-center">
-          <p class="<?= $successMessage ? 'text-green-500' : 'text-red-500' ?> font-bold">
-            <?= htmlspecialchars($successMessage ?: $errorMessage); ?>
-          </p>
-          <button onclick="closeSuccessModal()"
-            class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Close</button>
-        </div>
-      </div>
-    <?php endif; ?>
-
     <!-- Order Table -->
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
         <thead class="bg-gray-200">
           <tr>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Name</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Email</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Delivery Location</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Location No.</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Food Name</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Quantity</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Order Status</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Order Time</th>
-            <th class="border px-4 py-3 text-left text-gray-700 font-semibold">Actions</th>
+            <th class="border px-4 py-3 text-left font-semibold">Name</th>
+            <th class="border px-4 py-3 text-left font-semibold">Email</th>
+            <th class="border px-4 py-3 text-left font-semibold">Delivery Location</th>
+            <th class="border px-4 py-3 text-left font-semibold">Location No.</th>
+            <th class="border px-4 py-3 text-left font-semibold">Food Name</th>
+            <th class="border px-4 py-3 text-left font-semibold">Quantity</th>
+            <th class="border px-4 py-3 text-left font-semibold">Order Status</th>
+            <th class="border px-4 py-3 text-left font-semibold">Order Time</th>
+            <th class="border px-4 py-3 text-left font-semibold">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -97,13 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
               <td class="border px-4 py-3">
                 <span
                   class="<?= $order['order_status'] === 'Pending' ? 'text-yellow-500' : ($order['order_status'] === 'Confirmed' ? 'text-green-500' : 'text-red-500') ?>">
-                  <?= $order['order_status']; ?>
+                  <?= htmlspecialchars($order['order_status']); ?>
                 </span>
               </td>
-              <?php
-              $orderTime = new DateTime($order['order_time']);
-              $formattedTime = $orderTime->format('F j, Y, g:i A');
-              ?>
+              <?php $formattedTime = (new DateTime($order['order_time']))->format('F j, Y, g:i A'); ?>
               <td class="border px-4 py-3"><?= htmlspecialchars($formattedTime); ?></td>
               <td class="border px-4 py-3">
                 <button class="text-blue-500 hover:underline"
@@ -127,14 +104,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
     <div class="bg-white p-6 rounded shadow-lg text-center">
       <p class="text-gray-800 font-semibold mb-4">Are you sure you want to <span id="modalActionText"></span> this
         order?</p>
-      <form id="modalForm">
-        <input type="hidden" name="order_id" id="modalOrderId">
-        <input type="hidden" name="action" id="modalAction">
-        <button type="button" onclick="submitOrderAction()"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Yes</button>
-        <button type="button" onclick="closeModal()"
-          class="ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">No</button>
-      </form>
+      <input type="hidden" id="modalOrderId">
+      <input type="hidden" id="modalAction">
+      <button type="button" onclick="submitOrderAction()"
+        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Yes</button>
+      <button type="button" onclick="closeModal()"
+        class="ml-2 bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500">No</button>
     </div>
   </div>
 
@@ -150,15 +125,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
       document.getElementById('confirmModal').style.display = 'none';
     }
 
-    function closeSuccessModal() {
-      document.querySelector('#messageModal').classList.add('hidden');
-    }
-
     function submitOrderAction() {
       const orderId = document.getElementById('modalOrderId').value;
       const action = document.getElementById('modalAction').value;
-
-      console.log('Sending orderId:', orderId, 'with action:', action); // Debugging log
 
       // Perform AJAX request to update order status
       const xhr = new XMLHttpRequest();
@@ -168,11 +137,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
       xhr.onload = function () {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
-          console.log('Response received:', response); // Debugging log
-
           if (response.status === 'success') {
             // Update the order status in the table
-            const statusCell = document.querySelector(`tr[data-order-id="${orderId}"] td:nth-child(8) span`);
+            const statusCell = document.querySelector(`tr[data-order-id="${orderId}"] td:nth-child(7) span`);
             statusCell.innerText = response.newStatus;
             statusCell.className = response.newStatus === 'Confirmed' ? 'text-green-500' : 'text-red-500';
           } else {
@@ -180,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
           }
           closeModal();
         } else {
-          alert('Request failed. Status: ' + xhr.status); // Error handling for failed requests
+          alert('Request failed. Status: ' + xhr.status);
         }
       };
 
@@ -190,7 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
 
       xhr.send(`order_id=${orderId}&action=${action}`);
     }
-
   </script>
 </body>
 

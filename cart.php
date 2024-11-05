@@ -8,7 +8,55 @@ if (!isset($_SESSION['username'])) {
   exit();
 }
 
-$user_id = $_SESSION['user_id']; // Get the logged-in user's ID
+$user_id = $_SESSION['user_id'];
+$orderSuccess = false; // Track success of order placement
+$errorMessage = "";
+$orderList = [];
+
+// Fetch all cart items for the current user and insert them into food_order if "Order Now" is clicked
+if (isset($_GET["order"]) && $_GET["order"] === "true") {
+  $query = "SELECT * FROM cart WHERE user_id = '$user_id'";
+  $cartResult = mysqli_query($conn, $query);
+
+  if ($cartResult && mysqli_num_rows($cartResult) > 0) {
+    $orderSuccess = true;
+    while ($item = mysqli_fetch_assoc($cartResult)) {
+      $food_id = $item['food_id'];
+      $quantity = $item['quantity'];
+      $name = $item['name'];
+      $email = $item['email'];
+      $delivery_location = $item['delivery_location'];
+      $location_number = $item['location_number'];
+      $food_name = $item['food_name'];
+      $image_url = $item['image_url'];
+      $price = $item['price'];
+      $total_price = $price * $quantity;
+
+      $insertQuery = "INSERT INTO food_order 
+                (user_id, food_id, quantity, name, email, delivery_location, location_number, food_name, order_status, price, image_url, total_price)
+                VALUES 
+                ('$user_id', '$food_id', '$quantity', '$name', '$email', '$delivery_location', '$location_number', '$food_name', 'Pending', '$price', '$image_url', '$total_price')";
+
+      $insertResult = mysqli_query($conn, $insertQuery);
+
+      // Check for insertion success
+      if (!$insertResult) {
+        $orderSuccess = false;
+        $errorMessage = "Failed to place order. Please try again.";
+        break;
+      }
+    }
+
+    // Delete items from cart if order placement was successful
+    if ($orderSuccess) {
+      $deleteCartQuery = "DELETE FROM cart WHERE user_id = '$user_id'";
+      $deleteCartResult = mysqli_query($conn, $deleteCartQuery);
+      if (!$deleteCartResult) {
+        $errorMessage = "Failed to clear cart after order. Please contact support.";
+      }
+    }
+  }
+}
 
 // Handle deletion
 if (isset($_GET['delete'])) {
@@ -34,8 +82,6 @@ if (isset($_POST['update'])) {
   exit();
 }
 
-
-
 // Fetch cart items for logged-in user with calculated total_price
 $query = "SELECT *, (price * quantity) AS total_price FROM cart WHERE user_id = $user_id";
 $result = mysqli_query($conn, $query);
@@ -57,12 +103,6 @@ foreach ($cartItems as $item) {
   <title>Cart</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    .active {
-      font-weight: bold;
-      color: black;
-    }
-  </style>
 </head>
 
 <body class="bg-gray-100">
@@ -71,9 +111,9 @@ foreach ($cartItems as $item) {
   <div class="container mx-auto p-5">
     <h1 class="text-3xl font-bold mb-5">Your Cart</h1>
 
-    <?php if (isset($message)): ?>
-      <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded" id="message" role="alert">
-        <span><?= htmlspecialchars($message) ?></span>
+    <?php if ($errorMessage): ?>
+      <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" id="message" role="alert">
+        <span><?= htmlspecialchars($errorMessage) ?></span>
       </div>
     <?php endif; ?>
 
@@ -85,13 +125,12 @@ foreach ($cartItems as $item) {
         </div>
       </div>
     <?php else: ?>
+      <!-- Cart Table -->
       <div class="overflow-x-auto">
         <table class="min-w-full bg-white shadow rounded-lg">
           <thead>
             <tr class="bg-gray-200">
               <th class="py-3 px-4 text-left">Food Item</th>
-              <th class="py-3 px-4 text-left">Image</th>
-              <th class="py-3 px-4 text-left">Room/Table</th>
               <th class="py-3 px-4 text-left">Quantity</th>
               <th class="py-3 px-4 text-left">Price</th>
               <th class="py-3 px-4 text-left">Total Price</th>
@@ -102,18 +141,9 @@ foreach ($cartItems as $item) {
             <?php foreach ($cartItems as $item): ?>
               <tr class="border-b hover:bg-gray-100">
                 <td class="py-2 px-4"><?= htmlspecialchars($item['food_name']) ?></td>
-                <td class="py-2 px-4">
-                  <img src="<?= htmlspecialchars($item['image_url']) ?>" alt="<?= htmlspecialchars($item['food_name']) ?>"
-                    class="w-16 h-16 object-cover">
-                </td>
-                <td class="py-2 px-4"><?= htmlspecialchars($item['location_number']) ?></td>
-                <td class="py-2 px-4">
-                  <span id="quantity-<?= $item['id'] ?>"><?= $item['quantity'] ?></span>
-                  <button class="bg-blue-500 rounded-md text-white px-2 py-1 ml-2 update-button"
-                    data-id="<?= $item['id'] ?>">Update</button>
-                </td>
-                <td class="py-2 px-4 item-price">$<?= number_format($item['price'], 2) ?></td>
-                <td class="py-2 px-4 item-total">$<?= number_format($item['total_price'], 2) ?></td>
+                <td class="py-2 px-4"><?= htmlspecialchars($item['quantity']) ?></td>
+                <td class="py-2 px-4">$<?= number_format($item['price'], 2) ?></td>
+                <td class="py-2 px-4">$<?= number_format($item['total_price'], 2) ?></td>
                 <td class="py-2 px-4 text-center">
                   <button class="bg-red-500 rounded-md text-white px-2 py-1 ml-2 delete-button"
                     data-id="<?= $item['id'] ?>">Remove</button>
@@ -131,98 +161,38 @@ foreach ($cartItems as $item) {
           <p id="totalBillAmount" class="text-2xl font-semibold text-green-600">$<?= number_format($totalBill, 2) ?></p>
         </div>
         <!-- Order Now Button -->
-        <a href="order_now.php" class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+        <a href="cart.php?order=true"
+          class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
           Order Now
         </a>
       </div>
     <?php endif; ?>
   </div>
-
-  <!-- Update Quantity Modal -->
-  <div id="updateModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex justify-center items-center">
-    <div class="bg-white p-5 rounded shadow-lg w-1/3">
-      <h2 class="text-xl mb-4">Update Quantity</h2>
-      <form id="updateForm" method="POST" action="cart.php">
-        <input type="hidden" name="id" id="updateItemId">
-        <label for="quantity" class="block text-sm mb-1">New Quantity:</label>
-        <input type="number" name="quantity" id="updateQuantity" min="1" class="border p-2 w-full mb-4">
-        <div class="flex justify-end">
-          <button type="submit" name="update" class="bg-blue-500 text-white px-4 py-2">Update</button>
-          <button type="button" id="closeUpdateModal" class="ml-2 bg-gray-300 text-gray-800 px-4 py-2">Cancel</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Delete Confirmation Modal -->
-  <div id="deleteModal" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden flex justify-center items-center">
-    <div class="bg-white p-5 rounded shadow-lg w-1/3">
-      <h2 class="text-xl mb-4">Delete Item</h2>
-      <p class="mb-4">Are you sure you want to remove this item from your cart?</p>
-      <div class="flex justify-end">
-        <a href="#" id="confirmDelete" class="bg-red-500 text-white px-4 py-2">Yes, Remove</a>
-        <button id="closeDeleteModal" class="ml-2 bg-gray-300 text-gray-800 px-4 py-2">Cancel</button>
-      </div>
+  <!-- Success Modal -->
+  <div id="successModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+      <h2 class="text-green-500 text-xl font-bold mb-4">Order Placed Successfully!</h2>
+      <p class="text-gray-700">Your order has been added successfully. Thank you for your purchase!</p>
+      <button onclick="closeSuccessModal()"
+        class="mt-4 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Close</button>
     </div>
   </div>
 
   <script>
-    $(document).ready(function () {
-      function calculateTotalBill() {
-        let totalBill = 0;
-        $('.item-total').each(function () {
-          totalBill += parseFloat($(this).text().replace('$', ''));
-        });
-        $('#totalBillAmount').text(`$${totalBill.toFixed(2)}`);
-      }
+    // Function to show the success modal
+    function openSuccessModal() {
+      document.getElementById('successModal').classList.remove('hidden');
+    }
 
-      // Open Update Modal
-      $('.update-button').click(function () {
-        const itemId = $(this).data('id');
-        const currentQuantity = $(`#quantity-${itemId}`).text(); // Get current quantity
+    // Function to close the success modal
+    function closeSuccessModal() {
+      document.getElementById('successModal').classList.add('hidden');
+      window.location.href = "my_orders.php"; // Redirect if needed
+    }
 
-        $('#updateItemId').val(itemId);
-        $('#updateQuantity').val(currentQuantity); // Set current quantity in input
-        $('#updateModal').removeClass('hidden');
-      });
-
-      // Close Update Modal
-      $('#closeUpdateModal').click(function () {
-        $('#updateModal').addClass('hidden');
-      });
-
-      // Update quantity via AJAX
-      $('#updateForm').submit(function (e) {
-        e.preventDefault();
-        const id = $('#updateItemId').val();
-        const quantity = $('#updateQuantity').val();
-        $.ajax({
-          url: 'cart.php',
-          type: 'POST',
-          data: { update: true, id, quantity },
-          dataType: 'json',
-          success: function (response) {
-            if (response.status === 'success') {
-              location.reload();
-            } else {
-              alert(response.message);
-            }
-          }
-        });
-      });
-
-      // Open Delete Modal
-      $('.delete-button').click(function () {
-        const itemId = $(this).data('id');
-        $('#confirmDelete').attr('href', `cart.php?delete=${itemId}`);
-        $('#deleteModal').removeClass('hidden');
-      });
-
-      // Close Delete Modal
-      $('#closeDeleteModal').click(function () {
-        $('#deleteModal').addClass('hidden');
-      });
-    });
+    <?php if ($insertResult && $deleteCartResult) { ?>
+      openSuccessModal()
+    <?php } ?>
   </script>
 </body>
 
