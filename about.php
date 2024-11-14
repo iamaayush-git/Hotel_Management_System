@@ -8,7 +8,9 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Hotel Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="public/style.css" rel="stylesheet">
+
     <style>
         .bg-about {
             background-image: url('path/to/your/about-background.jpg');

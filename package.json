@@ -1,0 +1,15 @@
+{
+  "name": "hotel_management_system",
+  "version": "1.0.0",
+  "description": "It is a web-based application designed to streamline hotel operations, including room reservations, booking management. Built using procedural PHP, HTML, CSS, JavaScript, and MySQL.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^3.4.14"
+  }
+}

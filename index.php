@@ -23,7 +23,9 @@ $food_result = mysqli_query($conn, $food_sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hotel Management System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="public/style.css" rel="stylesheet">
+
     <style>
         .active {
             font-weight: bold;

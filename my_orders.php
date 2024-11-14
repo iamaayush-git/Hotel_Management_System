@@ -61,7 +61,9 @@ while ($row = mysqli_fetch_assoc($orderResult)) {
 <head>
   <meta charset="UTF-8">
   <title>Order Now</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <link href="public/style.css" rel="stylesheet">
+
 </head>
 
 <body>
