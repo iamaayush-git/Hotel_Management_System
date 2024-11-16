@@ -12,20 +12,14 @@ session_start();
     <link href="public/style.css" rel="stylesheet">
 
     <style>
-        .bg-about {
-            background-image: url('path/to/your/about-background.jpg');
-            /* Update with the actual path */
-        }
-
         .active {
             font-weight: bold;
-            color: blue;
-            /* Change the color for the active link */
+            color: black;
         }
     </style>
 </head>
 
-<body class="bg-about bg-cover bg-center">
+<body class="bg-cover bg-center">
     <?php include 'navbar.php'; ?>
 
     <div class="container mx-auto p-8 bg-white bg-opacity-70 rounded-lg mt-4">

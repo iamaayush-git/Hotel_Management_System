@@ -63,7 +63,12 @@ while ($row = mysqli_fetch_assoc($orderResult)) {
   <title>Order Now</title>
   <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <link href="public/style.css" rel="stylesheet">
-
+  <style>
+    .active {
+      font-weight: bold;
+      color: black;
+    }
+  </style>
 </head>
 
 <body>
@@ -72,13 +77,13 @@ while ($row = mysqli_fetch_assoc($orderResult)) {
   <!-- Order List -->
   <div class="container mx-auto mt-10">
     <h2 class="text-4xl font-semibold mb-8 text-center text-gray-800 drop-shadow-sm tracking-wide">
-      <span class="border-b-4 border-gray-300 pb-1 text-blue-600">Your Orders</span>
+      <span class="border-b-4 border-gray-300 pb-1 text-3xl font-bold text-blue-600">Your Orders</span>
     </h2>
     <!-- Confirmation Modal -->
     <div id="confirmationModal" class="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
       <div class="bg-white p-6 rounded-lg shadow-lg text-center">
         <h2 class="text-lg font-semibold text-gray-800 mb-4">Confirm Order</h2>
-        <p class="text-gray-700">Are you sure you want to place this order?</p>
+        <p class="text-gray-700">Are you sure you want to cancel this order?</p>
         <div class="mt-4 flex justify-center space-x-4">
           <button id="confirmCancelBtn"
             class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Yes</button>

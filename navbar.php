@@ -66,10 +66,10 @@
 
       <?php if (isset($_SESSION['username'])): ?>
         <li><a href="my_orders.php"
-            class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'my_orders.php') ? 'active' : ''; ?> ">My
+            class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'my_orders.php') ? 'active' : ''; ?> ">
             Orders</a></li>
         <li><a href="my_bookings.php"
-            class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'my_bookings.php') ? 'active' : ''; ?> ">My
+            class="text-gray-700 hover:text-blue-500 text-gray-700 hover:text-blue-500 <?php echo (basename($_SERVER['PHP_SELF']) == 'my_bookings.php') ? 'active' : ''; ?> ">
             Bookings</a></li>
         <li class="text-gray-700">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?>!</li>
         <li>

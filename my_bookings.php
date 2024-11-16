@@ -44,11 +44,10 @@ if (!$result) {
 
 <body class="bg-gray-100">
   <?php include 'navbar.php'; ?>
-  <div class="container mx-auto p-8">
-    <h1 class="text-4xl font-bold mb-8 text-center text-blue-600">My Bookings</h1>
-
+  <div class="container mx-auto p-8 text-center">
+    <span class="border-b-4 text-3xl font-bold border-gray-300 pb-1 text-blue-600">Your Bookings</span>
     <?php if (mysqli_num_rows($result) > 0) { ?>
-      <ul class="space-y-6">
+      <ul class="space-y-6 mt-10">
         <?php while ($booking = mysqli_fetch_assoc($result)) { ?>
           <li class="bg-white p-6 rounded-lg shadow-lg transition-transform hover:scale-105 duration-300">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -88,7 +87,7 @@ if (!$result) {
         <?php } ?>
       </ul>
     <?php } else { ?>
-      <p class="text-center text-xl text-gray-500">You don't have any bookings yet.</p>
+      <p class="text-center text-xl mt-10 text-gray-500">You don't have any bookings yet.</p>
     <?php } ?>
 
     <!-- Modal for Cancellation Confirmation -->

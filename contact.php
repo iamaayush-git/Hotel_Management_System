@@ -29,8 +29,10 @@ session_start();
     <?php include 'navbar.php'; ?>
 
     <div class="container mx-auto p-8 bg-white bg-opacity-70 rounded-lg mt-4">
-        <h1 class="text-4xl font-bold text-center mb-6">Contact Us</h1>
-        <p class="text-lg text-center mb-4">We would love to hear from you! Please fill out the form below.</p>
+        <div class="w-full text-center">
+            <span class="border-b-4 border-gray-300 pb-1 text-3xl font-bold text-blue-600">Contact Us</span>
+            <p class="text-lg text-center mb-4 mt-6">We would love to hear from you! Please fill out the form below.</p>
+        </div>
 
         <form action="submit_contact.php" method="POST" class="space-y-4">
             <div>

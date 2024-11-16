@@ -38,7 +38,7 @@ $result = mysqli_query($conn, $sql);
     <style>
         .active {
             font-weight: bold;
-            color: blue;
+            color: black;
         }
     </style>
 </head>
