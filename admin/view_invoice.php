@@ -101,13 +101,13 @@ if (isset($_POST['mark_paid'])) {
           </thead>
           <tbody>
             <?php foreach ($reservations as $reservation): ?>
-              <tr>
+              <tr class="text-center">
                 <td class="px-4 py-2"><?php echo htmlspecialchars($reservation['room_number']); ?></td>
                 <td class="px-4 py-2"><?php echo htmlspecialchars($reservation['room_type']); ?></td>
                 <td class="px-4 py-2"><?php echo htmlspecialchars($reservation['check_in_date']); ?></td>
                 <td class="px-4 py-2"><?php echo htmlspecialchars($reservation['check_out_date']); ?></td>
                 <td class="px-4 py-2"><?php echo $reservation['days_stayed']; ?></td>
-                <td class="px-4 py-2">$<?php echo number_format($reservation['total_price'], 2); ?></td>
+                <td class="px-4 py-2">Rs.<?php echo number_format($reservation['total_price'], 2); ?></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -131,11 +131,11 @@ if (isset($_POST['mark_paid'])) {
           </thead>
           <tbody>
             <?php foreach ($food_orders as $order): ?>
-              <tr>
+              <tr class="text-center">
                 <td class="px-4 py-2"><?php echo htmlspecialchars($order['food_name']); ?></td>
-                <td class="px-4 py-2">$<?php echo number_format($order['price'], 2); ?></td>
+                <td class="px-4 py-2">Rs.<?php echo number_format($order['price'], 2); ?></td>
                 <td class="px-4 py-2"><?php echo $order['quantity']; ?></td>
-                <td class="px-4 py-2">$<?php echo number_format($order['total_price'], 2); ?></td>
+                <td class="px-4 py-2">Rs.<?php echo number_format($order['total_price'], 2); ?></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
@@ -148,7 +148,7 @@ if (isset($_POST['mark_paid'])) {
     <!-- Total Bill -->
     <div class="mb-6">
       <h3 class="text-xl font-semibold">Total Bill</h3>
-      <p><strong>Total Amount:</strong> $<?php echo number_format($total_bill, 2); ?></p>
+      <p><strong>Total Amount:</strong> Rs.<?php echo number_format($total_bill, 2); ?></p>
     </div>
 
     <!-- Mark as Paid -->

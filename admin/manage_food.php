@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Ensure the user is logged in and is an admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: login.php");
   exit;
@@ -9,7 +8,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 include "../db_connection.php";
 
-// Handle Add Food Item
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_food'])) {
   $food_name = $_POST['food_name'];
   $description = $_POST['description'];
@@ -28,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_food'])) {
   }
 }
 
-// Handle Update Food Item
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_food'])) {
   $food_id = $_POST['food_id'];
   $food_name = $_POST['food_name'];
@@ -63,7 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_food'])) {
   }
 }
 
-// Fetch food items from the database
 $foodItemsQuery = "SELECT * FROM food_items";
 $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
 
@@ -81,7 +77,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
 </head>
 
 <body class="bg-gray-100 flex">
-  <!-- Sidebar -->
   <?php include 'sidebar.php'; ?>
 
   <div class="w-3/4 p-8">
@@ -109,7 +104,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
       </form>
     </div>
 
-    <!-- Food Items Table -->
     <div class="bg-white p-6 rounded-lg shadow-md">
       <h3 class="text-2xl font-semibold mb-4">All Food Items</h3>
       <table class="w-full text-left">
@@ -130,7 +124,7 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
               </td>
               <td class="border-b p-4"><?php echo htmlspecialchars($food['name']); ?></td>
               <td class="border-b p-4"><?php echo htmlspecialchars($food['description']); ?></td>
-              <td class="border-b p-4">$<?php echo htmlspecialchars(number_format($food['price'], 2)); ?></td>
+              <td class="border-b p-4">Rs.<?php echo htmlspecialchars(number_format($food['price'], 2)); ?></td>
               <td class="border-b p-4">
                 <button
                   onclick="showUpdateModal(<?php echo $food['id']; ?>, '<?php echo htmlspecialchars($food['name']); ?>', '<?php echo htmlspecialchars($food['description']); ?>', '<?php echo htmlspecialchars($food['price']); ?>', '<?php echo htmlspecialchars($food['image_url']); ?>')"
@@ -145,7 +139,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
     </div>
   </div>
 
-  <!-- Update Food Modal -->
   <div id="updateModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
       <h2 class="text-xl font-bold mb-4">Update Food Item</h2>
@@ -174,7 +167,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
     </div>
   </div>
 
-  <!-- Delete Food Modal -->
   <div id="deleteModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
       <h2 class="text-xl font-bold mb-4">Confirm Delete</h2>
@@ -188,7 +180,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
     </div>
   </div>
 
-  <!-- Success Modal -->
   <div id="successModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center">
       <h2 class="text-xl font-bold text-green-600 mb-4">Success!</h2>
@@ -223,7 +214,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
       document.getElementById('deleteFoodId').value = id;
     }
 
-    // Check for PHP success condition and show modal if true
     <?php if (isset($modalMessage)) { ?>
       showSuccessModal('<?php echo $modalMessage; ?>');
     <?php } ?>

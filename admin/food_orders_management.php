@@ -1,24 +1,20 @@
 <?php
-// Start session and include database connection
 session_start();
 include '../db_connection.php';
-
-// Check if user is logged in as admin
 if (!isset($_SESSION['admin_logged_in'])) {
-  header("Location: login.php"); // Redirect to login if not logged in as admin
+  header("Location: login.php");
   exit();
 }
 
 $orders = [];
 
-// Fetch all food orders
+
 $orderQuery = "SELECT id, name, email, delivery_location, location_number, food_name, quantity, price, order_status, order_time FROM food_order";
 $orderResult = mysqli_query($conn, $orderQuery);
 while ($row = mysqli_fetch_assoc($orderResult)) {
   $orders[] = $row;
 }
 
-// Handle AJAX request for updating order status
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['action'])) {
   $orderId = $_POST['order_id'];
   $action = $_POST['action'];
@@ -40,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
 <head>
   <meta charset="UTF-8">
   <title>Food Orders</title>
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <link href="../public/style.css" rel="stylesheet">
 
 </head>
@@ -61,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
             <th class="border px-4 py-3 text-left font-semibold">Food Name</th>
             <th class="border px-4 py-3 text-left font-semibold">Quantity</th>
             <th class="border px-4 py-3 text-left font-semibold">Order Status</th>
-            <th class="border px-4 py-3 text-left font-semibold">Order Time</th>
             <th class="border px-4 py-3 text-left font-semibold">Actions</th>
           </tr>
         </thead>
@@ -81,8 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
                   <?= htmlspecialchars($order['order_status']); ?>
                 </span>
               </td>
-              <?php $formattedTime = (new DateTime($order['order_time']))->format('F j, Y, g:i A'); ?>
-              <td class="border px-4 py-3"><?= htmlspecialchars($formattedTime); ?></td>
               <td class="border px-4 py-3">
                 <button class="text-blue-500 hover:underline"
                   onclick="openConfirmModal('confirm', <?= htmlspecialchars($order['id'], ENT_QUOTES, 'UTF-8'); ?>)">
@@ -100,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
     </div>
   </div>
 
-  <!-- Centered Confirmation Modal -->
   <div id="confirmModal" class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 hidden">
     <div class="bg-white p-6 rounded shadow-lg text-center">
       <p class="text-gray-800 font-semibold mb-4">Are you sure you want to <span id="modalActionText"></span> this
@@ -130,7 +121,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
       const orderId = document.getElementById('modalOrderId').value;
       const action = document.getElementById('modalAction').value;
 
-      // Perform AJAX request to update order status
       const xhr = new XMLHttpRequest();
       xhr.open('POST', '', true);
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -139,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
           if (response.status === 'success') {
-            // Update the order status in the table
             const statusCell = document.querySelector(`tr[data-order-id="${orderId}"] td:nth-child(7) span`);
             statusCell.innerText = response.newStatus;
             statusCell.className = response.newStatus === 'Confirmed' ? 'text-green-500' : 'text-red-500';

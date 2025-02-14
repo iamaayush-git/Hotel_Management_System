@@ -1,18 +1,16 @@
 <?php
-// Include database connection
 include '../db_connection.php';
 
-session_start(); // Start a session
+session_start();
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
-  header("Location: login.php"); // Redirect to login if not admin
+  header("Location: login.php");
   exit();
 }
 
-// Variables to control modal display
-$modalMessage = '';
-$modalType = ''; // success or error
 
-// Handle adding a new room
+$modalMessage = '';
+$modalType = '';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_room'])) {
   $room_number = $_POST['room_number'];
   $room_type = $_POST['room_type'];
@@ -20,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_room'])) {
   $availability = $_POST['availability'];
   $image_url = $_POST['image_url'];
 
-  // Prepare and execute the insert statement
   $sql = "INSERT INTO rooms (room_number, room_type, price, availability, image_url) VALUES ('$room_number', '$room_type', '$price', '$availability', '$image_url')";
 
   if (mysqli_query($conn, $sql)) {
@@ -32,7 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_room'])) {
   }
 }
 
-// Handle deleting a room
 if (isset($_GET['delete'])) {
   $id = $_GET['delete'];
   $sql = "DELETE FROM rooms WHERE id = '$id'";
@@ -48,7 +44,6 @@ if (isset($_GET['delete'])) {
   }
 }
 
-// Handle updating a room
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_room'])) {
   $id = $_POST['id'];
   $room_number = $_POST['room_number'];
@@ -68,11 +63,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_room'])) {
   }
 }
 
-// Fetch existing rooms
 $sql = "SELECT * FROM rooms";
 $result = mysqli_query($conn, $sql);
 
-// Close the database connection
 mysqli_close($conn);
 ?>
 
@@ -83,9 +76,8 @@ mysqli_close($conn);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Rooms</title>
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <link href="../public/style.css" rel="stylesheet">
-   
+
 </head>
 
 <body class="bg-gray-100">
@@ -148,7 +140,7 @@ mysqli_close($conn);
               <tr class="border-b border-gray-200 hover:bg-gray-100 font-semibold">
                 <td class="py-3 px-6 text-left"><?php echo $room['room_number']; ?></td>
                 <td class="py-3 px-6 text-left"><?php echo $room['room_type']; ?></td>
-                <td class="py-3 px-6 text-left">$<?php echo $room['price']; ?></td>
+                <td class="py-3 px-6 text-left">Rs.<?php echo $room['price']; ?></td>
                 <td class="py-3 px-6 text-left"><?php echo ucfirst($room['availability']); ?></td>
                 <td class="py-3 px-6 text-left">
                   <button type="button" onclick="openUpdateModal(<?php echo htmlspecialchars(json_encode($room)); ?>)"
@@ -215,7 +207,6 @@ mysqli_close($conn);
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
   <div id="deleteModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white p-6 rounded-lg shadow-lg">
       <p class="font-semibold">Are you sure you want to delete this room?</p>

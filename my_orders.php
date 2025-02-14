@@ -105,7 +105,7 @@ while ($row = mysqli_fetch_assoc($orderResult)) {
             <th class="border px-6 py-3 text-left text-gray-700 uppercase font-semibold">Quantity</th>
             <th class="border px-6 py-3 text-left text-gray-700 uppercase font-semibold">Price</th>
             <th class="border px-6 py-3 text-left text-gray-700 uppercase font-semibold">Total Price</th>
-            <th class="border px-6 py-3 text-left text-gray-700 uppercase font-semibold">Time</th>
+            
             <th class="border px-6 py-3 text-left text-gray-700 uppercase font-semibold">Order Status</th>
             <th class="border px-6 py-3 text-left text-gray-700 uppercase font-semibold">Actions</th>
           </tr>
@@ -124,8 +124,7 @@ while ($row = mysqli_fetch_assoc($orderResult)) {
               <td class="border px-6 py-4"><?php echo $order['quantity']; ?></td>
               <td class="border px-6 py-4"><?php echo $order['price']; ?></td>
               <td class="border px-6 py-4"><?php echo $order['total_price']; ?></td>
-              <?php $formattedTime = (new DateTime($order['order_time']))->format('F j, Y, g:i A'); ?>
-              <td class="border px-4 py-3"><?= htmlspecialchars($formattedTime); ?></td>
+            
               <td class="border px-6 py-4">
                 <span class="<?php echo $order['order_status'] === 'Pending' ? 'text-yellow-500' : 'text-gray-400'; ?>">
                   <?php echo $order['order_status']; ?>

@@ -158,8 +158,8 @@ if (isset($_GET["order"]) && $_GET["order"] === "true") {
               <tr class="border-b hover:bg-gray-100">
                 <td class="py-2 px-4"><?= htmlspecialchars($item['food_name']) ?></td>
                 <td class="py-2 px-4"><?= htmlspecialchars($item['quantity']) ?></td>
-                <td class="py-2 px-4">$<?= number_format($item['price'], 2) ?></td>
-                <td class="py-2 px-4">$<?= number_format($item['total_price'], 2) ?></td>
+                <td class="py-2 px-4">Rs.<?= number_format($item['price'], 2) ?></td>
+                <td class="py-2 px-4">Rs.<?= number_format($item['total_price'], 2) ?></td>
                 <td class="py-2 px-4"><?= htmlspecialchars($item['delivery_location']) ?></td>
                 <td class="py-2 px-4"><?= htmlspecialchars($item['location_number']) ?></td>
                 <td class="py-2 px-4 text-center">
@@ -180,7 +180,7 @@ if (isset($_GET["order"]) && $_GET["order"] === "true") {
       <div class="mt-4 text-right">
         <div class="bg-white p-6 rounded-lg shadow-md mt-6">
           <h2 class="text-xl font-bold text-gray-800">Grand Total:</h2>
-          <p id="totalBillAmount" class="text-2xl font-semibold text-green-600">$<?= number_format($totalBill, 2) ?></p>
+          <p id="totalBillAmount" class="text-2xl font-semibold text-green-600">Rs.<?= number_format($totalBill, 2) ?></p>
         </div>
         <a href="cart.php?order=true"
           class="mt-4 inline-block bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">

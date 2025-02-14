@@ -1,9 +1,7 @@
 <?php
 session_start();
-// Connect to the database
 include 'db_connection.php';
 
-// Fetch all rooms with the correct status by checking both 'rooms' and 'reservations' tables
 $sql = "
     SELECT rooms.*, 
            CASE 
@@ -26,11 +24,9 @@ $result = mysqli_query($conn, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Rooms</title>
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <link href="public/style.css" rel="stylesheet">
 
     <script>
-        // Close modals
         function closeModal(modalId) {
             document.getElementById(modalId).classList.add('hidden');
         }
@@ -56,7 +52,7 @@ $result = mysqli_query($conn, $sql);
                     <h2 class="text-xl font-bold mb-2"><?php echo htmlspecialchars(strtoupper($room['room_type'])); ?></h2>
 
                     <p>Room Number: <?php echo htmlspecialchars($room['room_number']); ?></p>
-                    <p>Price: $<?php echo htmlspecialchars($room['price']); ?> per night</p>
+                    <p>Price: Rs.<?php echo htmlspecialchars($room['price']); ?> per night</p>
                     <p>Status:
                         <span
                             class="<?php echo $room['display_status'] == 'available' ? 'text-green-500' : ($room['display_status'] == 'Pending' ? 'text-yellow-500' : 'text-red-500'); ?>">

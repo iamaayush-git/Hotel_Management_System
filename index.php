@@ -92,7 +92,7 @@ $food_result = mysqli_query($conn, $food_sql);
                                     <?php echo htmlspecialchars(strtoupper($room['room_type'])); ?>
                                 </h3>
                                 <p>Room Number: <?php echo htmlspecialchars($room['room_number']); ?></p>
-                                <p class="font-bold">$<?php echo htmlspecialchars($room['price']); ?> per night</p>
+                                <p class="font-bold">Rs.<?php echo htmlspecialchars($room['price']); ?> per night</p>
                                 <p class="text-green-600"><?php echo htmlspecialchars($room['availability']); ?></p>
                             </div>
                         </a>
@@ -115,7 +115,7 @@ $food_result = mysqli_query($conn, $food_sql);
                                 <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars(strtoupper($food['name'])); ?>
                                 </h3>
                                 <p><?php echo htmlspecialchars($food['description']); ?></p>
-                                <p class="font-bold">$<?php echo htmlspecialchars($food['price']); ?></p>
+                                <p class="font-bold">Rs.<?php echo htmlspecialchars($food['price']); ?></p>
                             </div>
                         </a>
                     <?php endwhile; ?>

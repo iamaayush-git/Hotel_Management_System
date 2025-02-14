@@ -1,45 +1,36 @@
 <?php
-// Start session and check if user is logged in
 session_start();
 if (!isset($_SESSION['username'])) {
   header("Location: login.php");
   exit();
 }
 
-// Database connection
 require 'db_connection.php';
 
-// Check if the user is banned
 $username = $_SESSION['username'];
 $user_check_query = "SELECT is_banned FROM users WHERE username = '" . mysqli_real_escape_string($conn, $username) . "'";
 $user_result = mysqli_query($conn, $user_check_query);
 $user = mysqli_fetch_assoc($user_result);
 
-// Check if user is banned
 $is_banned = $user['is_banned'] == 1;
 
-// Initialize search query
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Fetch food items from the database based on search input
 $query = "SELECT * FROM food_items WHERE name LIKE '%" . mysqli_real_escape_string($conn, $search) . "%'";
 $result = mysqli_query($conn, $query);
 
-// Check if any foods were found
 $food_items_found = mysqli_num_rows($result) > 0;
 
-// Handle form submission for order confirmation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $user_id = $_SESSION['user_id']; // Ensure the user is logged in and you have their ID
+  $user_id = $_SESSION['user_id'];
   $food_id = mysqli_real_escape_string($conn, $_POST['food_id']);
-  $quantity = mysqli_real_escape_string($conn, $_POST['quantity']); // Assuming quantity is part of the form
+  $quantity = mysqli_real_escape_string($conn, $_POST['quantity']);
   $name = mysqli_real_escape_string($conn, $_POST['name']);
   $email = mysqli_real_escape_string($conn, $_POST['email']);
   $location_type = mysqli_real_escape_string($conn, $_POST['location_type']);
   $location_number = mysqli_real_escape_string($conn, $_POST['location_number']);
   $order_status = 'Pending';
 
-  // Fetch the price of the food from the food table
   $food_query = "SELECT * FROM food_items WHERE id = '$food_id'";
   $food_result = mysqli_query($conn, $food_query);
 
@@ -48,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $food_name = $food_row['name'];
     $image_url = $food_row['image_url'];
 
-    // Insert order into the cart table
     $insert_query = "INSERT INTO cart (user_id, food_id, quantity, order_status, `name`, email, delivery_location, location_number, food_name, price, image_url) 
                      VALUES ('$user_id', '$food_id', '$quantity', '$order_status', '$name', '$email', '$location_type', '$location_number', '$food_name', '$price','$image_url')";
 
@@ -60,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   }
 
-  // Redirect to refresh the page and display message
   header("Location: food.php");
   exit();
 }
@@ -79,19 +68,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="public/style.css" rel="stylesheet">
 
   <script>
-    // Function to close the message modal
     function closeModal() {
       document.getElementById('banModal').classList.add('hidden');
     }
 
-    // Function to handle adding to cart or showing ban modal
     function handleAddToCart(foodId, foodName) {
-      // Check if the user is banned
       <?php if ($is_banned): ?>
-        // If banned, show the ban modal
         document.getElementById('banModal').classList.remove('hidden');
       <?php else: ?>
-        // If not banned, open the order modal
         openOrderModal(foodId, foodName);
       <?php endif; ?>
     }
@@ -127,10 +111,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body class="bg-gray-100">
 
-  <!-- Navbar Include -->
   <?php include 'navbar.php'; ?>
 
-  <!-- Modal for banned user (initially hidden) -->
   <div id="banModal" class="hidden fixed inset-0 bg-gray-300 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-8 rounded-md shadow-md max-w-lg w-full text-left">
       <h2 class="text-xl font-bold mb-4">Access Denied</h2>
@@ -140,10 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
-  <!-- Container with padding on the left and right -->
   <div class="container mx-auto px-4 py-4">
 
-    <!-- Search bar -->
     <div class="my-4">
       <form method="GET" id="searchForm" class="flex relative">
         <input type="text" name="search" placeholder="Search food items..."
@@ -151,7 +131,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           onkeypress="searchFood(event)" id="searchInput">
         <button type="submit" class="bg-blue-500 text-white px-4 rounded-r-md">Search</button>
 
-        <!-- Clear Button -->
         <button type="button" id="clearSearch" class="absolute right-20 top-1/2 transform -translate-y-1/2 p-2"
           onclick="clearSearchValue()">
           <span class="text-xl w-14 font-bold h-full flex justify-center items-center text-gray-600">X</span>
@@ -159,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </form>
     </div>
 
-    <!-- Food Items Display -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <?php if ($food_items_found): ?>
         <?php while ($food = mysqli_fetch_assoc($result)): ?>
@@ -169,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="p-4">
               <h3 class="text-lg font-semibold"><?php echo htmlspecialchars($food['name']); ?></h3>
               <p class="text-gray-600"><?php echo htmlspecialchars($food['description']); ?></p>
-              <p class="text-green-600 font-bold mt-2">$<?php echo htmlspecialchars($food['price']); ?></p>
+              <p class="text-green-600 font-bold mt-2">Rs.<?php echo htmlspecialchars($food['price']); ?></p>
               <button
                 onclick="handleAddToCart(<?php echo $food['id']; ?>, '<?php echo htmlspecialchars($food['name']); ?>')"
                 class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add to Cart</button>
@@ -183,7 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <?php endif; ?>
     </div>
 
-    <!-- Order Modal (hidden initially) -->
     <div id="orderModal" class="hidden fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-8 rounded-md shadow-md max-w-lg w-full text-left">
         <h2 class="text-xl font-bold mb-4">Order Details</h2>
@@ -222,7 +199,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </div>
 
-    <!-- Success Modal (hidden initially) -->
     <div id="successModal" class="hidden fixed inset-0 bg-gray-700 bg-opacity-50 flex items-center justify-center">
       <div class="bg-white p-8 rounded-md shadow-md max-w-lg w-full text-left">
         <h2 class="text-xl font-bold mb-1">Success!</h2>
@@ -234,22 +210,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
     <?php
-    // Clear modal message session variable after showing it
     unset($_SESSION['modal_message']);
     ?>
 
   </div>
   <script>
-    // Function to close the success modal
     function closeSuccessModal() {
       document.getElementById('successModal').classList.add('hidden');
     }
 
-    // Show the success modal if the session variable is set
     window.onload = function () {
       <?php if (isset($_SESSION['success_message'])): ?>
         document.getElementById('successModal').classList.remove('hidden');
-        <?php unset($_SESSION['success_message']); // Clear the message after displaying ?>
+        <?php unset($_SESSION['success_message']); ?>
       <?php endif; ?>
     };
   </script>

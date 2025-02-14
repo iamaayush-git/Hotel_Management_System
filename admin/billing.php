@@ -50,12 +50,12 @@ $users_result = mysqli_query($conn, $users_query);
           $total_food_charge = $user['total_food_charge'];
           $total_bill = $total_room_charge + $total_food_charge;
           ?>
-          <tr>
+          <tr class="text-center">
             <td class="px-4 py-2"><?php echo htmlspecialchars($user['username']); ?></td>
             <td class="px-4 py-2"><?php echo htmlspecialchars($user['email']); ?></td>
-            <td class="px-4 py-2">$<?php echo number_format($total_room_charge, 2); ?></td>
-            <td class="px-4 py-2">$<?php echo number_format($total_food_charge, 2); ?></td>
-            <td class="px-4 py-2 font-bold">$<?php echo number_format($total_bill, 2); ?></td>
+            <td class="px-4 py-2">Rs.<?php echo number_format($total_room_charge, 2); ?></td>
+            <td class="px-4 py-2">Rs.<?php echo number_format($total_food_charge, 2); ?></td>
+            <td class="px-4 py-2 font-bold">Rs.<?php echo number_format($total_bill, 2); ?></td>
             <td class="px-4 py-2">
               <a href="view_invoice.php?user_id=<?php echo $user['id']; ?>"
                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
