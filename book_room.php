@@ -83,12 +83,12 @@ unset($_SESSION['booking_success']);
         </div>
         <div>
           <label for="check_in_date" class="block text-gray-700">Check-In Date:</label>
-          <input type="date" name="check_in_date"
+          <input type="date" name="check_in_date" id="check_in_date"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
         </div>
         <div>
           <label for="check_out_date" class="block text-gray-700">Check-Out Date:</label>
-          <input type="date" name="check_out_date"
+          <input type="date" name="check_out_date" id="check_out_date"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" required>
         </div>
         <button type="submit" class="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
@@ -119,6 +119,20 @@ unset($_SESSION['booking_success']);
   </div>
 
   <script>
+    document.getElementById("check_in_date").addEventListener("change", function () {
+      let checkIn = document.getElementById("check_in_date").value;
+      document.getElementById("check_out_date").setAttribute("min", checkIn);
+    });
+
+    document.querySelector("form").addEventListener("submit", function (event) {
+      let checkIn = document.getElementById("check_in_date").value;
+      let checkOut = document.getElementById("check_out_date").value;
+
+      if (checkOut < checkIn) {
+        alert("Check-Out Date cannot be earlier than Check-In Date!");
+        event.preventDefault(); // Prevent form submission
+      }
+    });
     // Show the banned user modal
     function showBannedUserModal() {
       document.getElementById('bannedUserModal').classList.remove('hidden');

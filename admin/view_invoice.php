@@ -1,8 +1,6 @@
 <?php
-// Include database connection
 include('../db_connection.php');
 
-// Fetch user ID from the query string
 $user_id = $_GET['user_id'] ?? null;
 
 if (!$user_id) {
@@ -10,7 +8,6 @@ if (!$user_id) {
   exit;
 }
 
-// Fetch user details (exclude admin role)
 $user_query = "SELECT id, username, email FROM users WHERE id = $user_id AND role != 'admin'";
 $user_result = mysqli_query($conn, $user_query);
 $user = mysqli_fetch_assoc($user_result);
@@ -20,7 +17,6 @@ if (!$user) {
   exit;
 }
 
-// Fetch reservation details (only confirmed)
 $reservation_query = "SELECT r.room_type, r.price AS room_price, res.check_in_date, res.check_out_date, res.room_number 
                       FROM reservations res
                       JOIN rooms r ON res.room_id = r.id
@@ -41,7 +37,6 @@ while ($reservation = mysqli_fetch_assoc($reservation_result)) {
   $room_charge += $reservation['total_price'];
 }
 
-// Fetch food orders (only confirmed)
 $food_order_query = "SELECT food_name, price, quantity, total_price 
                      FROM food_order
                      WHERE user_id = $user_id AND order_status = 'Confirmed'";
@@ -54,19 +49,15 @@ while ($food_order = mysqli_fetch_assoc($food_order_result)) {
   $total_food_charge += $food_order['total_price'];
 }
 
-// Calculate total bill
 $total_bill = $room_charge + $total_food_charge;
 
-// Handle "Paid" action
 if (isset($_POST['mark_paid'])) {
-  // Remove only confirmed reservations and food orders
   $delete_reservations_query = "DELETE FROM reservations WHERE user_id = $user_id AND status = 'Confirmed'";
   $delete_food_orders_query = "DELETE FROM food_order WHERE user_id = $user_id AND order_status = 'Confirmed'";
 
   mysqli_query($conn, $delete_reservations_query);
   mysqli_query($conn, $delete_food_orders_query);
 
-  // Redirect back to the user list
   header("Location: billing.php");
   exit;
 }
@@ -80,7 +71,6 @@ if (isset($_POST['mark_paid'])) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Invoice Details</title>
   <link href="../public/style.css" rel="stylesheet">
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
 
 </head>
 
@@ -95,7 +85,6 @@ if (isset($_POST['mark_paid'])) {
       <p><strong>Email:</strong> <?php echo htmlspecialchars($user['email']); ?></p>
     </div>
 
-    <!-- Room Reservation Details -->
     <div class="mb-6">
       <h3 class="text-xl font-semibold">Room Reservations</h3>
       <?php if (count($reservations) > 0): ?>
@@ -128,7 +117,6 @@ if (isset($_POST['mark_paid'])) {
       <?php endif; ?>
     </div>
 
-    <!-- Food Orders -->
     <div class="mb-6">
       <h3 class="text-xl font-semibold">Food Orders</h3>
       <?php if (count($food_orders) > 0): ?>
@@ -170,7 +158,6 @@ if (isset($_POST['mark_paid'])) {
           Mark as Paid
         </button>
       </form>
-      <!-- Print Button -->
       <div class="text-center">
         <button onclick="window.print()" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-700">
           Print Invoice

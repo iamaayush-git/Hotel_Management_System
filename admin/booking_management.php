@@ -8,32 +8,25 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 
 include "../db_connection.php";
 
-// Fetch all bookings
 $sql = "SELECT * FROM reservations";
 $result = mysqli_query($conn, $sql);
 
-// Handle booking confirmation
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['confirm_booking_id'])) {
     $booking_id = $_POST['confirm_booking_id'];
 
-    // Update booking status to 'Confirmed'
     $update_booking_sql = "UPDATE reservations SET status = 'Confirmed' WHERE id = '$booking_id'";
     mysqli_query($conn, $update_booking_sql);
 
-    // Respond to AJAX request
     echo json_encode(['status' => 'success']);
     exit;
 }
 
-// Handle booking deletion
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_booking_id'])) {
     $delete_booking_id = $_POST['delete_booking_id'];
 
-    // Delete the reservation
     $delete_booking_sql = "DELETE FROM reservations WHERE id = '$delete_booking_id'";
     mysqli_query($conn, $delete_booking_sql);
 
-    // Respond to AJAX request
     echo json_encode(['status' => 'deleted']);
     exit;
 }
@@ -46,11 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_booking_id'])) 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Management</title>
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+
     <link href="../public/style.css" rel="stylesheet">
 
     <script>
-        // Send AJAX request to confirm booking
         function confirmBooking(bookingId, roomId) {
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "<?php echo $_SERVER['PHP_SELF']; ?>", true);
@@ -68,7 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_booking_id'])) 
             xhr.send(`confirm_booking_id=${bookingId}&room_id=${roomId}`);
         }
 
-        // Send AJAX request to delete booking
         function deleteBooking(bookingId) {
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "<?php echo $_SERVER['PHP_SELF']; ?>", true);
@@ -84,9 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_booking_id'])) 
             xhr.send(`delete_booking_id=${bookingId}`);
         }
 
-        // Function to handle modal display and actions
         function openConfirmModal(bookingId, roomId) {
-            confirmBooking(bookingId, roomId);  // Directly call confirmBooking
+            confirmBooking(bookingId, roomId);
         }
 
         function openDeleteModal(bookingId) {
@@ -152,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_booking_id'])) 
             </table>
         </div>
 
-        <!-- Delete Modal -->
         <div id="deleteModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
                 <h2 class="text-2xl font-bold mb-4">Delete Booking</h2>

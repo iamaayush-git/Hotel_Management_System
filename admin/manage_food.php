@@ -76,7 +76,6 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Food Items</title>
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <link href="../public/style.css" rel="stylesheet">
 
 </head>
@@ -85,10 +84,8 @@ $foodItemsResult = mysqli_query($conn, $foodItemsQuery);
   <!-- Sidebar -->
   <?php include 'sidebar.php'; ?>
 
-  <!-- Main Content -->
   <div class="w-3/4 p-8">
     <h2 class="text-3xl font-bold mb-4 w-full text-center">Manage Food Items</h2>
-    <!-- Add Food Item Form -->
     <div class="mb-6">
       <h2 class="text-xl font-semibold mb-4">Add New Food</h2>
       <form method="POST" class="mb-6">

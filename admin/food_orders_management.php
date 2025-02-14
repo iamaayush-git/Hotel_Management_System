@@ -50,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['a
   <div class="container mx-auto p-8">
     <h2 class="text-4xl font-semibold mb-6 text-center text-gray-800">Manage Food Orders</h2>
 
-    <!-- Order Table -->
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg">
         <thead class="bg-gray-200">

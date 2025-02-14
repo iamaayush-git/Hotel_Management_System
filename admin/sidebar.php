@@ -19,7 +19,6 @@
   </nav>
 </div>
 
-<!-- Logout Confirmation Modal -->
 <div id="logoutModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
   <div class="bg-white p-8 rounded-lg shadow-2xl max-w-sm text-center">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Confirm Logout</h2>
@@ -34,17 +33,14 @@
 </div>
 
 <script>
-  // Open the logout modal
   function openLogoutModal() {
     document.getElementById('logoutModal').classList.remove('hidden');
   }
 
-  // Close the logout modal
   function closeLogoutModal() {
     document.getElementById('logoutModal').classList.add('hidden');
   }
 
-  // Confirm logout and redirect to the logout script
   function confirmLogout() {
     window.location.href = '../logout.php';
   }

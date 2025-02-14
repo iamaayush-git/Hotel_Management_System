@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Check if the user is logged in as an admin
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
   header("Location: login.php");
   exit;
@@ -9,7 +8,6 @@ if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'admin') {
 
 include "../db_connection.php";
 
-// Fetch all users from the database
 $sql = "SELECT * FROM users";
 $result = mysqli_query($conn, $sql);
 ?>
@@ -21,7 +19,6 @@ $result = mysqli_query($conn, $sql);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manage Users</title>
-  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <link href="../public/style.css" rel="stylesheet">
 
 </head>
@@ -66,7 +63,6 @@ $result = mysqli_query($conn, $sql);
         </table>
       </div>
     </div>
-    <!-- Ban Confirmation Modal -->
     <div id="banModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
       <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm text-center">
         <p class="mb-4">Are you sure you want to <span id="banAction"></span> this user?</p>
@@ -75,7 +71,6 @@ $result = mysqli_query($conn, $sql);
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">
       <div class="bg-white p-6 rounded-lg shadow-lg max-w-sm text-center">
         <p class="mb-4">Are you sure you want to delete this user?</p>

@@ -1,7 +1,6 @@
 <?php
 include('../db_connection.php');
 
-// Fetch all non-admin users
 $users_query = "
     SELECT u.id, u.username, u.email, 
            IFNULL(SUM(r.price * DATEDIFF(res.check_out_date, res.check_in_date)), 0) AS total_room_charge,
@@ -23,7 +22,7 @@ $users_result = mysqli_query($conn, $users_query);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Users and Invoices</title>
-  <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet"> -->
+
   <link href="../public/style.css" rel="stylesheet">
 
 </head>
@@ -33,7 +32,6 @@ $users_result = mysqli_query($conn, $users_query);
   <div class="container mx-auto p-6 bg-white shadow-md rounded-lg">
     <h2 class="text-2xl font-bold mb-4">Users and Invoices</h2>
 
-    <!-- Users Table -->
     <table class="min-w-full bg-gray-100 rounded-md">
       <thead>
         <tr class="bg-gray-300">

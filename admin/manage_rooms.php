@@ -96,7 +96,6 @@ mysqli_close($conn);
         <h1 class="text-2xl font-semibold text-center w-full font-bold">Manage Rooms</h1>
       </header>
 
-      <!-- Add Room Form -->
       <div class="mb-6">
         <h2 class="text-xl font-semibold mb-4">Add New Room</h2>
         <form method="POST" class="mb-6">
@@ -132,7 +131,6 @@ mysqli_close($conn);
         </form>
       </div>
 
-      <!-- Existing Rooms Table -->
       <h2 class="text-lg font-semibold mb-4">Existing Rooms</h2>
       <div class="overflow-x-auto">
         <table class="min-w-full bg-white rounded-lg shadow-md">
@@ -166,7 +164,6 @@ mysqli_close($conn);
     </div>
   </div>
 
-  <!-- Success/Error Message Modal -->
   <?php if ($modalMessage): ?>
     <div id="messageModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -178,7 +175,6 @@ mysqli_close($conn);
     </div>
   <?php endif; ?>
 
-  <!-- Update Room Modal -->
   <div id="updateModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white p-6 rounded-lg shadow-lg">
       <form method="POST">
